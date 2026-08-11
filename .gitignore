@@ -47,3 +47,4 @@ Thumbs.db
 # Razorpay keys (DO NOT COMMIT)
 *razorpay*key*
 *RAZORPAY*KEY*
+.claude/
