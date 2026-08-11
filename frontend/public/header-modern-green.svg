@@ -1,0 +1,63 @@
+<svg width="200" height="30" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 30">
+  <defs>
+    <!-- Gradient for subtle depth -->
+    <linearGradient id="leafGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#166534;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#16A34A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#166534;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Leaf motif -->
+    <g id="leaf">
+      <path d="M 0,8 Q 4,4 8,8 Q 4,12 0,8" fill="#86EFAC" stroke="#166534" stroke-width="0.5"/>
+      <path d="M 4,8 Q 5,6 6,8" fill="none" stroke="#166534" stroke-width="0.5"/>
+    </g>
+
+    <!-- Decorative diamond -->
+    <g id="diamond">
+      <path d="M 5,0 L 10,5 L 5,10 L 0,5 Z" fill="#86EFAC" stroke="#16A34A" stroke-width="1"/>
+      <circle cx="5" cy="5" r="2" fill="#16A34A"/>
+    </g>
+  </defs>
+
+  <!-- Center ornament -->
+  <g transform="translate(90, 10)">
+    <!-- Center circle with decorative ring -->
+    <circle cx="10" cy="5" r="8" fill="#F9FAFB" stroke="url(#leafGradient)" stroke-width="2"/>
+    <circle cx="10" cy="5" r="5" fill="none" stroke="#166534" stroke-width="1"/>
+    <circle cx="10" cy="5" r="3" fill="#86EFAC"/>
+    <circle cx="10" cy="5" r="1" fill="#16A34A"/>
+  </g>
+
+  <!-- Left decoration -->
+  <g transform="translate(50, 10)">
+    <use href="#diamond"/>
+    <!-- Small leaves extending left -->
+    <use href="#leaf" x="-20" y="-3" transform="rotate(-45 -20 5)"/>
+    <use href="#leaf" x="-28" y="-3" transform="rotate(-45 -28 5)"/>
+  </g>
+
+  <!-- Right decoration -->
+  <g transform="translate(130, 10)">
+    <use href="#diamond"/>
+    <!-- Small leaves extending right -->
+    <use href="#leaf" x="12" y="-3" transform="rotate(45 20 5)"/>
+    <use href="#leaf" x="20" y="-3" transform="rotate(45 28 5)"/>
+  </g>
+
+  <!-- Connecting curved lines -->
+  <path d="M 60,15 Q 80,10 95,15" fill="none" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M 105,15 Q 120,10 140,15" fill="none" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- Small accent dots -->
+  <circle cx="75" cy="12" r="1.5" fill="#86EFAC"/>
+  <circle cx="125" cy="12" r="1.5" fill="#86EFAC"/>
+
+  <!-- Decorative flourish lines -->
+  <line x1="65" y1="15" x2="70" y2="15" stroke="#166534" stroke-width="1" stroke-linecap="round"/>
+  <line x1="130" y1="15" x2="135" y2="15" stroke="#166534" stroke-width="1" stroke-linecap="round"/>
+
+  <!-- Outer accent leaves -->
+  <use href="#leaf" x="30" y="7" transform="scale(0.7) rotate(-30 38 15)"/>
+  <use href="#leaf" x="154" y="7" transform="scale(0.7) rotate(30 162 15)"/>
+</svg>

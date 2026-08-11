@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm init:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm start)",
+      "Bash(BROWSER=none npm start)",
+      "WebFetch(domain:www.weddingbiodata.in)",
+      "WebFetch(domain:www.freepik.com)",
+      "Bash(netstat:*)",
+      "Bash(ss:*)",
+      "Bash(curl:*)",
+      "Bash(ls:*)",
+      "Bash(PORT=3000 npm start)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

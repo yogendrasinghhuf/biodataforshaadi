@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.test-box {
+  width: 300px;
+  height: 400px;
+  position: relative;
+  background: white;
+  margin: 50px;
+}
+.test-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1;
+  background-image: var(--border-image);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+</style>
+</head>
+<body>
+<div class="test-box" style="--border-image: url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 600%27%3E%3Cg stroke=%27%23DC2626%27 stroke-width=%272.5%27 fill=%27none%27%3E%3Cpath d=%27M5,5 L60,5 M5,5 L5,60%27/%3E%3C/g%3E%3C/svg%3E');">
+  Test content
+</div>
+</body>
+</html>

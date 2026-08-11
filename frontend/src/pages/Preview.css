@@ -1,0 +1,364 @@
+.preview-page {
+  padding: 40px 0 80px;
+  min-height: 100vh;
+}
+
+/* Success Screen */
+.success-screen {
+  max-width: 600px;
+  margin: 40px auto;
+  text-align: center;
+}
+
+.success-icon {
+  width: 100px;
+  height: 100px;
+  background: var(--primary-green);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  font-weight: bold;
+  margin: 0 auto 24px;
+  box-shadow: var(--shadow-xl);
+  animation: successPop 0.5s ease-out;
+}
+
+@keyframes successPop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.success-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--gray-900);
+  margin-bottom: 12px;
+}
+
+.success-message {
+  font-size: 1.125rem;
+  color: var(--gray-600);
+  margin-bottom: 32px;
+}
+
+.success-card {
+  text-align: left;
+  padding: 32px;
+}
+
+.success-card h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.order-details {
+  margin-bottom: 24px;
+}
+
+.order-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--gray-200);
+  font-size: 1rem;
+}
+
+.order-value {
+  font-weight: 700;
+  color: var(--gray-900);
+}
+
+.status-paid {
+  color: var(--primary-green);
+  background: rgba(22, 163, 74, 0.1);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.875rem;
+}
+
+.download-section {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 2px solid var(--gray-200);
+  text-align: center;
+}
+
+.download-note {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  margin-top: 12px;
+  font-style: italic;
+}
+
+.back-button {
+  margin-bottom: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.preview-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  align-items: start;
+  gap: 32px;
+  margin-top: 40px;
+}
+
+/* Biodata Preview card — holds border overlay + scroll area */
+.biodata-preview-card {
+  position: relative;
+  border-radius: 16px;
+  background: white;
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05),
+    inset 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+  padding: 0;
+}
+
+/* SVG border pinned to card edges — always fully visible, never scrolls */
+.biodata-border-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: var(--border-image);
+}
+
+/* Scrollable area inside the card */
+.biodata-preview-scroll {
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 700px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Preview page sizing — scoped to preview-layout so it doesn't bleed into CreateBiodataNew */
+/* Outer wrapper carries the scrollbar; the bordered box itself never scrolls, so the border never overlaps the scrollbar track */
+.preview-layout .preview-scroll-wrapper {
+  max-width: 650px;
+  width: 100%;
+  margin: 0;
+  height: calc(100vh - 180px);
+  min-height: 794px;
+  max-height: 1350px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #16A34A #e5e7eb;
+}
+
+.preview-layout .preview-scroll-wrapper::-webkit-scrollbar {
+  width: 6px;
+}
+
+.preview-layout .preview-scroll-wrapper::-webkit-scrollbar-track {
+  background: #e5e7eb;
+  border-radius: 3px;
+}
+
+.preview-layout .preview-scroll-wrapper::-webkit-scrollbar-thumb {
+  background: #16A34A;
+  border-radius: 3px;
+}
+
+.preview-layout .preview-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #166534;
+}
+
+.preview-layout .biodata-preview-mini {
+  background: var(--white);
+  width: 100%;
+  min-height: 100%;
+  display: block;
+}
+
+.preview-layout .preview-inner-scroll {
+  overflow: visible;
+}
+
+/* Content wrap inside preview-inner-scroll — padding scaled to match the mini-preview's proportion (22px at 360px wide) at this box's larger 650px width */
+.preview-mini-content-wrap {
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  min-height: 500px;
+}
+
+
+/* Payment Card */
+.payment-card {
+  position: sticky;
+  top: 20px;
+  height: fit-content;
+  padding: 16px;
+  border: 3px solid transparent;
+  background-image:
+    linear-gradient(white, white),
+    linear-gradient(135deg, var(--primary-red), var(--primary-yellow), var(--primary-green));
+  background-origin: padding-box, border-box;
+  background-clip: padding-box, border-box;
+  border-radius: 16px;
+  box-shadow: var(--shadow-xl);
+}
+
+.payment-eyebrow {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gray-500);
+  margin-bottom: 10px;
+}
+
+.payment-template-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.payment-template-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.04);
+}
+
+.payment-template-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+
+.payment-details {
+  margin-bottom: 12px;
+}
+
+.payment-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  color: var(--gray-600);
+  font-size: 0.9rem;
+}
+
+.payment-value {
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.payment-row.total {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  align-items: center;
+}
+
+.payment-offer-note {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: -2px;
+}
+
+.payment-offer-badge {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: white;
+  background: linear-gradient(135deg, #16A34A 0%, #15803D 100%);
+  padding: 4px 10px;
+  border-radius: 6px;
+  letter-spacing: 0.3px;
+}
+
+.payment-offer-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--primary-green-dark);
+}
+
+.payment-amount {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-right: 8px;
+  background: var(--gradient-warm);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.payment-amount-original {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--gray-400);
+  text-decoration: line-through;
+}
+
+.btn-full {
+  width: 100%;
+  font-size: 1.125rem;
+  padding: 11px;
+}
+
+.payment-info {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--gray-200);
+}
+
+.payment-info p {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  margin: 5px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+/* Responsive */
+@media (max-width: 968px) {
+  .preview-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .payment-card {
+    position: static;
+  }
+
+  .biodata-preview-scroll {
+    max-height: 60vh;
+  }
+
+  .preview-field strong {
+    min-width: 80px;
+    font-size: 0.7rem;
+  }
+}
+
+/* Template border styles, header, field, name-title rules now in biodata-preview-shared.css */

@@ -1,0 +1,433 @@
+/* ========================================
+   SHARED BIODATA PREVIEW STYLES
+   Imported by both CreateBiodataNew.tsx and Preview.tsx.
+   Do NOT duplicate any of these rules in those files.
+   ======================================== */
+
+/* ── Inner scroll container ── */
+.preview-inner-scroll {
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+  scrollbar-width: none;
+}
+
+.preview-inner-scroll::-webkit-scrollbar {
+  width: 0;
+  background: transparent;
+}
+
+/* ── Border image element (pinned over scrollable content) ── */
+.preview-border-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+  object-fit: fill;
+  border-radius: 16px;
+}
+
+.biodata-preview-mini::before {
+  display: none;
+}
+
+.mehndi-border {
+  position: relative;
+}
+
+/* ── Symbol watermark ── */
+.symbol-watermark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+  overflow: hidden;
+}
+
+.symbol-watermark span {
+  position: absolute;
+  font-size: 6rem;
+  opacity: 0.05;
+  pointer-events: none;
+}
+
+.symbol-watermark span:nth-child(1) {
+  top: 12%;
+  left: 20%;
+  transform: rotate(-20deg);
+}
+
+.symbol-watermark span:nth-child(2) {
+  top: 25%;
+  right: 15%;
+  transform: rotate(15deg);
+}
+
+.symbol-watermark span:nth-child(3) {
+  top: 50%;
+  left: 15%;
+  transform: translateY(-50%) rotate(-10deg);
+}
+
+.symbol-watermark span:nth-child(4) {
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%) rotate(20deg);
+}
+
+/* ── Photo corner ── */
+.preview-photo-corner {
+  position: absolute;
+  top: 190px;
+  right: 44px;
+  width: 128px;
+  height: 128px;
+  border-radius: 8px;
+  border: 3px solid currentColor;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  z-index: 0;
+  background: white;
+  box-sizing: content-box;
+}
+
+.preview-photo-corner.photo-shape-circle {
+  border-radius: 50%;
+}
+
+.preview-photo-corner img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+/* ── Name title ── */
+.preview-name-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin: 0 0 6px 0;
+  padding: 12px 18px 6px;
+  text-align: center;
+  position: relative;
+}
+
+.preview-name-title::before {
+  display: none !important;
+}
+
+/* ── Field rows ── */
+.has-photo .preview-field {
+  padding-right: 180px;
+}
+
+.preview-mini-content {
+  padding: 0;
+  padding-bottom: 18px;
+  flex: 0 0 auto;
+  overflow: visible;
+  position: relative;
+  font-size: 11px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.preview-field {
+  padding: 3px 6px;
+  border-bottom: none;
+  font-size: 11px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transform: translateZ(0);
+}
+
+.preview-field:last-child {
+  border-bottom: none;
+}
+
+.preview-field strong {
+  color: var(--gray-700);
+  font-weight: 600;
+  display: inline-block;
+  min-width: 155px;
+  font-size: 11px;
+}
+
+.preview-empty {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--gray-400);
+}
+
+.preview-section-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 9px 9px 4px;
+  margin-top: 11px;
+  margin-bottom: 2px;
+  opacity: 0.9;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.preview-section-label::before,
+.preview-section-label::after {
+  content: '';
+  flex: 1;
+  height: 0.5px;
+  background: currentColor;
+  opacity: 0.4;
+}
+
+/* Dark royal templates: section label text stays gold */
+.border-template-sapphire-classic .preview-section-label,
+.border-template-crimson-rose .preview-section-label,
+.border-template-peacock-green .preview-section-label,
+.border-template-amber-classic .preview-section-label,
+.border-template-royal-mandala .preview-section-label {
+  color: #E8C77A !important;
+}
+
+.preview-mini-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.preview-mini-content::-webkit-scrollbar-track {
+  background: var(--gray-100);
+  border-radius: 3px;
+}
+
+.preview-mini-content::-webkit-scrollbar-thumb {
+  background: var(--gray-400);
+  border-radius: 3px;
+}
+
+.preview-mini-content::-webkit-scrollbar-thumb:hover {
+  background: var(--gray-500);
+}
+
+/* ── Header elements ── */
+.ganesha-icon-header {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.5rem;
+  z-index: 10;
+  display: none;
+}
+
+.shree-ganesh-header {
+  text-align: center;
+  padding: 6px 16px 3px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+}
+
+.shree-ganesh-text {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: #333333;
+  letter-spacing: 1px;
+  font-family: serif;
+}
+
+.biodata-header {
+  text-align: center;
+  font-size: 0.67rem;
+  font-weight: 600;
+  color: #000000;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: sans-serif;
+  padding: 0 16px 6px;
+}
+
+.icon-only-header {
+  text-align: center;
+  padding: 6px 16px 3px;
+}
+
+.icon-center {
+  width: 29px;
+  height: 29px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-center svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.header-icons-container {
+  position: relative;
+  height: 0;
+  pointer-events: none;
+}
+
+.header-icon-left {
+  width: 29px;
+  height: 29px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 11;
+  vertical-align: middle;
+}
+
+.header-icon-left svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.header-icon-right {
+  width: 29px;
+  height: 29px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 11;
+  vertical-align: middle;
+}
+
+.header-icon-right svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ── Template 1 (elegant-red) disable pseudo-elements ── */
+.border-template-elegant-red .preview-name-title::before,
+.border-template-elegant-red.hide-shree-ganesh .preview-name-title::before {
+  display: none !important;
+}
+
+.border-template-elegant-red .preview-name-title::after,
+.border-template-elegant-red.hide-biodata .preview-name-title::after {
+  display: none !important;
+}
+
+.border-template-elegant-red .preview-name-title {
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 4px 0;
+  padding: 8px 12px 4px;
+  letter-spacing: 0.5px;
+}
+
+/* ── Template 2 (modern-green) ── */
+.border-template-modern-green .preview-name-title::before {
+  display: none;
+}
+
+/* ── Dark Royal Templates — backgrounds ── */
+.border-template-sapphire-classic.biodata-preview-mini {
+  background-color: #16243D !important;
+  background-image: linear-gradient(155deg, #1E3252 0%, #101B2E 100%) !important;
+}
+
+.border-template-crimson-rose.biodata-preview-mini {
+  background-color: #3A0B1E !important;
+  background-image: linear-gradient(155deg, #5B1230 0%, #270714 100%) !important;
+}
+
+.border-template-peacock-green.biodata-preview-mini {
+  background-color: #0A2E2A !important;
+  background-image: linear-gradient(155deg, #0E423B 0%, #05201D 100%) !important;
+}
+
+.border-template-amber-classic.biodata-preview-mini {
+  background-color: #29132B !important;
+  background-image: linear-gradient(155deg, #3D1A40 0%, #1A0A1C 100%) !important;
+}
+
+.border-template-royal-mandala.biodata-preview-mini {
+  background-color: #1C1C1C !important;
+  background-image: linear-gradient(155deg, #2E2E2E 0%, #0E0E0E 100%) !important;
+}
+
+/* ── Dark Royal Templates — gold typography ── */
+.border-template-sapphire-classic .preview-field strong,
+.border-template-crimson-rose .preview-field strong,
+.border-template-peacock-green .preview-field strong,
+.border-template-amber-classic .preview-field strong,
+.border-template-royal-mandala .preview-field strong {
+  color: #E8C77A;
+}
+
+.border-template-sapphire-classic .preview-field,
+.border-template-crimson-rose .preview-field,
+.border-template-peacock-green .preview-field,
+.border-template-amber-classic .preview-field,
+.border-template-royal-mandala .preview-field {
+  color: #EDE3CC;
+}
+
+.border-template-sapphire-classic .preview-name-title,
+.border-template-crimson-rose .preview-name-title,
+.border-template-peacock-green .preview-name-title,
+.border-template-amber-classic .preview-name-title,
+.border-template-royal-mandala .preview-name-title {
+  color: #FFFFFF;
+}
+
+.border-template-sapphire-classic .shree-ganesh-text,
+.border-template-crimson-rose .shree-ganesh-text,
+.border-template-peacock-green .shree-ganesh-text,
+.border-template-amber-classic .shree-ganesh-text,
+.border-template-royal-mandala .shree-ganesh-text,
+.border-template-sapphire-classic .header-icon-left,
+.border-template-sapphire-classic .header-icon-right,
+.border-template-crimson-rose .header-icon-left,
+.border-template-crimson-rose .header-icon-right,
+.border-template-peacock-green .header-icon-left,
+.border-template-peacock-green .header-icon-right,
+.border-template-amber-classic .header-icon-left,
+.border-template-amber-classic .header-icon-right,
+.border-template-royal-mandala .header-icon-left,
+.border-template-royal-mandala .header-icon-right {
+  color: #E8C77A;
+  background: transparent;
+}
+
+.border-template-sapphire-classic .biodata-header,
+.border-template-crimson-rose .biodata-header,
+.border-template-peacock-green .biodata-header,
+.border-template-amber-classic .biodata-header,
+.border-template-royal-mandala .biodata-header {
+  color: #FFFFFF;
+}
+
+.border-template-sapphire-classic .preview-empty p,
+.border-template-crimson-rose .preview-empty p,
+.border-template-peacock-green .preview-empty p,
+.border-template-amber-classic .preview-empty p,
+.border-template-royal-mandala .preview-empty p {
+  color: #9DB0C9;
+}

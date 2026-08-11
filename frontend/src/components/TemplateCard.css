@@ -1,0 +1,155 @@
+/* Shared template gallery card styles — used by CreateBiodataNew's in-form gallery and the standalone Templates page */
+
+.template-card {
+  border: 2px solid var(--gray-300);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  overflow: hidden;
+  position: relative;
+  background: var(--white);
+  box-shadow: var(--shadow-md);
+}
+
+.template-card:hover {
+  border-color: var(--primary-red);
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-6px);
+}
+
+.template-card.selected {
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.2);
+  transform: translateY(-4px);
+}
+
+.template-preview-box {
+  height: 250px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  position: relative;
+  margin: 6px;
+  border-radius: 8px;
+  padding: 12px 8px;
+  overflow: visible;
+}
+
+.template-preview-box::before {
+  display: none;
+}
+
+.template-card-border-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  object-fit: fill;
+}
+
+.template-preview-content-centered {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 2;
+  width: 80%;
+}
+
+.template-name-inside {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin: 0 0 6px 0;
+  line-height: 1.3;
+}
+
+.template-price-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.template-price-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.template-price-original {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--gray-500);
+  text-decoration: line-through;
+}
+
+.template-price-current {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+
+.template-discount-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #16A34A 0%, #15803D 100%);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.template-number-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: white;
+  z-index: 3;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.selected-check-large {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  background: var(--primary-green);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  box-shadow: var(--shadow-lg);
+  z-index: 10;
+}
+
+/* Dark Royal templates — gallery card name + price must be light on the dark preview box */
+.border-template-sapphire-classic .template-name-inside,
+.border-template-crimson-rose .template-name-inside,
+.border-template-peacock-green .template-name-inside,
+.border-template-amber-classic .template-name-inside,
+.border-template-royal-mandala .template-name-inside,
+.border-template-sapphire-classic .template-price-current,
+.border-template-crimson-rose .template-price-current,
+.border-template-peacock-green .template-price-current,
+.border-template-amber-classic .template-price-current,
+.border-template-royal-mandala .template-price-current,
+.border-template-sapphire-classic .template-price-original,
+.border-template-crimson-rose .template-price-original,
+.border-template-peacock-green .template-price-original,
+.border-template-amber-classic .template-price-original,
+.border-template-royal-mandala .template-price-original {
+  color: #E8C77A !important;
+}

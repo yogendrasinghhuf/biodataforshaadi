@@ -1,0 +1,161 @@
+.templates-page {
+  padding: 40px 0 80px;
+  min-height: 100vh;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 60px;
+  padding-top: 20px;
+}
+
+.page-title {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 16px;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.page-subtitle {
+  font-size: 1.25rem;
+  color: var(--gray-600);
+}
+
+/* Filters */
+.filters-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding: 24px;
+  background: var(--white);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+}
+
+.filter-group,
+.sort-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.filter-group label,
+.sort-group label {
+  font-weight: 600;
+  color: var(--gray-700);
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 8px 16px;
+  border: 2px solid var(--gray-300);
+  background: var(--white);
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  color: var(--gray-700);
+}
+
+.filter-btn:hover {
+  border-color: var(--primary-red);
+  color: var(--primary-red);
+}
+
+.filter-btn.active {
+  background: var(--gradient-warm);
+  border-color: var(--primary-red);
+  color: var(--white);
+}
+
+.sort-select {
+  padding: 8px 16px;
+  border: 2px solid var(--gray-300);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  background: var(--white);
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+.sort-select:focus {
+  outline: none;
+  border-color: var(--primary-red);
+}
+
+/* Templates Grid */
+.templates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 32px;
+  margin-top: 32px;
+}
+
+/* .template-card, .template-card:hover → shared in ../components/TemplateCard.css */
+
+/* Override grid columns for the templates browsing page (wider than the create-page gallery) */
+.templates-page-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px;
+  margin-top: 24px;
+}
+
+.templates-page-grid .template-preview-box {
+  height: auto;
+  aspect-ratio: 2 / 3;
+}
+
+.templates-page-grid .template-name-inside {
+  font-size: 1.1rem;
+}
+
+.templates-page-grid .template-price-current {
+  font-size: 1.3rem;
+}
+
+/* Unused legacy card markup removed: .tpl-*, .template-info, .template-header, .template-name,
+   .template-category, .template-description, .template-footer, .template-price, .price-amount
+   — none referenced by current Templates.tsx JSX. */
+
+.no-results {
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--gray-500);
+  font-size: 1.25rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 2rem;
+  }
+
+  .filters-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-group,
+  .sort-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .templates-grid {
+    grid-template-columns: 1fr;
+  }
+}
