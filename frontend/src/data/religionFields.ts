@@ -137,7 +137,7 @@ export const familyFields = [
 ];
 
 export const contactFields = [
-  { name: 'phone', label: 'Phone Number', type: 'tel', required: false },
+  { name: 'phone', label: 'Phone Number', type: 'tel', required: true },
   { name: 'email', label: 'Email Address', type: 'email', required: false },
   { name: 'whatsapp', label: 'Alternate Number', type: 'tel', required: false },
   { name: 'address', label: 'Contact Address', type: 'textarea', required: false }
@@ -145,7 +145,7 @@ export const contactFields = [
 
 export const preferencesFields = [
   { name: 'partnerAgeRange', label: 'Partner Age Range', type: 'text', required: false, placeholder: 'e.g., 25-30' },
-  { name: 'partnerHeight', label: 'Partner Height Preference', type: 'text', required: false },
+  { name: 'partnerHeight', label: 'Partner Height Preference', type: 'text', required: false, placeholder: 'e.g., 5 ft 1 inch to 6 ft 1 inch' },
   { name: 'partnerEducation', label: 'Partner Education', type: 'text', required: false },
   { name: 'partnerOccupation', label: 'Partner Occupation', type: 'text', required: false },
   { name: 'partnerLocation', label: 'Partner Location', type: 'text', required: false },

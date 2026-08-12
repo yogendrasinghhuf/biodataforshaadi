@@ -256,6 +256,16 @@ const CreateBiodataNew: React.FC = () => {
       return;
     }
 
+    if (!formData.phone?.trim()) {
+      alert('Please enter Phone Number');
+      return;
+    }
+
+    if (formData.email?.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      alert('Please enter a valid Email Address');
+      return;
+    }
+
     if (!selectedTemplate) {
       alert('Please select a template');
       return;

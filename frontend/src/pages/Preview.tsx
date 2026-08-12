@@ -167,6 +167,12 @@ const Preview: React.FC = () => {
     const doc = new jsPDF({ unit: 'mm', format: 'a4' });
     doc.addImage(imgData, 'PNG', xOffset, yOffset, imgWidthMm, imgHeightMm);
 
+    // Brand credit sits just above the artwork's own bottom edge, inside the template, in the
+    // template's own border color so it reads as part of the design rather than an overlay.
+    doc.setFontSize(8);
+    doc.setTextColor(effectiveColor);
+    doc.text('biodataforshaadi.com', pageWidthMm / 2, yOffset + imgHeightMm - 10, { align: 'center' });
+
     return doc;
   };
 
