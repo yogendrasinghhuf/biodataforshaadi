@@ -87,10 +87,12 @@
 /* ── Photo corner ── */
 .preview-photo-corner {
   position: absolute;
-  top: 190px;
+  top: 145px;
   right: 44px;
   width: 128px;
-  height: 128px;
+  /* Matches the Upload Photo selector card's 3:4 rectangle so the crop shown here (how much
+     face vs. shoulders/body is visible) matches what the user picked, not a cropped-differently square. */
+  height: 170.7px;
   border-radius: 8px;
   border: 3px solid currentColor;
   overflow: hidden;
@@ -101,6 +103,7 @@
 }
 
 .preview-photo-corner.photo-shape-circle {
+  height: 128px;
   border-radius: 50%;
 }
 
@@ -128,8 +131,20 @@
 }
 
 /* ── Field rows ── */
-.has-photo .preview-field {
+/* Only Personal Details + Religion Details sit beside the photo, so only their fields need to
+   dodge it horizontally — Family/Contact/Partner Preferences have the full row width and would
+   wrap more than necessary if this padding applied to them too. */
+.has-photo .preview-fields-before-photo-clear .preview-field {
   padding-right: 180px;
+}
+
+/* The photo is absolutely positioned starting at roughly the same vertical point this wrapper
+   (Personal Details + Religion Details) does, so giving the wrapper at least the photo's own
+   height pushes Family Information/Contact Information/Partner Preferences to start after the
+   photo ends in normal document flow — instead of them rendering earlier and running behind it
+   when Personal Details has few fields filled in. */
+.has-photo .preview-fields-before-photo-clear {
+  min-height: 210px;
 }
 
 .preview-mini-content {
@@ -148,6 +163,7 @@
 }
 
 .preview-field {
+  display: flex;
   padding: 3px 6px;
   border-bottom: none;
   font-size: 11px;
@@ -161,11 +177,20 @@
   border-bottom: none;
 }
 
+/* flex (not inline-block) so a wrapped value stays indented under the value column instead of
+   falling back to the row's far left edge, which used to collide with the label above it. */
 .preview-field strong {
   color: var(--gray-700);
   font-weight: 600;
-  display: inline-block;
-  min-width: 155px;
+  flex: 0 0 155px;
+  font-size: 11px;
+}
+
+/* The value's own flex item — takes the remaining row width so it only wraps when it truly
+   doesn't fit, instead of an unwrapped text node defaulting to its own shrink-to-fit line. */
+.preview-field span {
+  flex: 1 1 auto;
+  min-width: 0;
   font-size: 11px;
 }
 
@@ -188,6 +213,7 @@
   align-items: center;
   gap: 6px;
 }
+
 
 .preview-section-label::before,
 .preview-section-label::after {

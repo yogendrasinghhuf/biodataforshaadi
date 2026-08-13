@@ -1573,7 +1573,7 @@
   flex: 1;
   position: relative;
   z-index: 1;
-  padding: 22px 22px 30px 22px;
+  padding: 15px 22px 30px 22px;
 }
 
 /* Elegant border pattern - removed old mehndi pattern */
@@ -1664,6 +1664,20 @@
   z-index: 10;
   object-fit: fill;
   border-radius: 0;
+}
+
+/* Mirrors the download page and PDF's brand credit line — pinned near the box's bottom edge, above the border image */
+.mini-preview-brand-credit {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 12px;
+  z-index: 11;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  opacity: 0.85;
+  pointer-events: none;
 }
 
 
@@ -2005,6 +2019,10 @@
   gap: 4px;
 }
 
+.preview-section-label:first-child {
+  margin-top: 0;
+}
+
 .preview-section-label::before,
 .preview-section-label::after {
   content: '';
@@ -2267,10 +2285,12 @@
 
 .mini-preview-photo-corner {
   position: absolute;
-  top: 120px;
+  top: 110px;
   right: 28px;
   width: 80px;
-  height: 80px;
+  /* Matches the Upload Photo selector card's 3:4 rectangle so the crop shown here (how much
+     face vs. shoulders/body is visible) matches what the user picked, not a cropped-differently square. */
+  height: 106.7px;
   border-radius: 6px;
   border: 2px solid currentColor;
   overflow: hidden;
@@ -2281,6 +2301,7 @@
 }
 
 .mini-preview-photo-corner.photo-shape-circle {
+  height: 80px;
   border-radius: 50%;
 }
 
@@ -2309,8 +2330,20 @@
 }
 
 /* ── Field rows ── */
-.mini-has-photo .mini-preview-field {
+/* Only Personal Details + Religion Details sit beside the photo, so only their fields need to
+   dodge it horizontally — Family/Contact/Partner Preferences have the full row width and would
+   wrap more than necessary if this padding applied to them too. */
+.mini-has-photo .mini-preview-fields-before-photo-clear .mini-preview-field {
   padding-right: 112px;
+}
+
+/* The photo is absolutely positioned starting at roughly the same vertical point this wrapper
+   (Personal Details + Religion Details) does, so giving the wrapper at least the photo's own
+   height pushes Family Information/Contact Information/Partner Preferences to start after the
+   photo ends in normal document flow — instead of them rendering earlier and running behind it
+   when Personal Details has few fields filled in. */
+.mini-has-photo .mini-preview-fields-before-photo-clear {
+  min-height: 132px;
 }
 
 .mini-preview-mini-content {
@@ -2329,6 +2362,7 @@
 }
 
 .mini-preview-field {
+  display: flex;
   padding: 2px 4px;
   border-bottom: none;
   font-size: 7px;
@@ -2342,12 +2376,20 @@
   border-bottom: none;
 }
 
+/* flex (not inline-block) so a wrapped value stays indented under the value column instead of
+   falling back to the row's far left edge, which would collide with the label above it. */
 .mini-preview-field strong {
   color: var(--gray-700);
   font-weight: 600;
-  display: inline-block;
-  min-width: 100px;
+  flex: 0 0 100px;
   font-size: 7px;
+}
+
+/* The value's own flex item — takes the remaining row width so it only wraps when it truly
+   doesn't fit, instead of an unwrapped text node defaulting to its own shrink-to-fit line. */
+.mini-preview-field span {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .mini-preview-empty {

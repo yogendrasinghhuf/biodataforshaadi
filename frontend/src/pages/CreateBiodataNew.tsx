@@ -297,7 +297,8 @@ const CreateBiodataNew: React.FC = () => {
       value: formData[field.name] || '',
       onChange: handleInputChange,
       required: field.required,
-      placeholder: field.placeholder || ''
+      placeholder: field.placeholder || '',
+      maxLength: field.maxLength
     };
 
     if (field.type === 'select') {
@@ -890,88 +891,94 @@ const CreateBiodataNew: React.FC = () => {
                   </h2>
                 )}
 
+                {/* Wraps Personal Details + Religion Details so a min-height (applied via CSS
+                    when a photo exists) can push Family Information and everything after it
+                    below the photo, instead of letting a short Personal Details section leave
+                    a later section's full-width label/divider running behind the photo. */}
+                <div className="mini-preview-fields-before-photo-clear">
                 {/* Personal Details */}
                 {(formData.dateOfBirth || formData.timeOfBirth || formData.placeOfBirth || formData.height || formData.weight || formData.complexion || formData.bloodGroup || formData.maritalStatus || formData.education || formData.college || formData.occupation || formData.company || formData.annualIncome || formData.workLocation) && (
                   <div className="preview-section-label" style={{ color: effectiveColor }}>Personal Details</div>
                 )}
-                {formData.dateOfBirth && <div className="mini-preview-field"><strong>Date of Birth:</strong> {formData.dateOfBirth}</div>}
-                {formData.timeOfBirth && <div className="mini-preview-field"><strong>Time of Birth:</strong> {formData.timeOfBirth}</div>}
-                {formData.placeOfBirth && <div className="mini-preview-field"><strong>Place of Birth:</strong> {formData.placeOfBirth}</div>}
-                {formData.height && <div className="mini-preview-field"><strong>Height:</strong> {formData.height}</div>}
-                {formData.weight && <div className="mini-preview-field"><strong>Weight:</strong> {formData.weight}</div>}
-                {formData.complexion && <div className="mini-preview-field"><strong>Complexion:</strong> {formData.complexion}</div>}
-                {formData.bloodGroup && <div className="mini-preview-field"><strong>Blood Group:</strong> {formData.bloodGroup}</div>}
-                {formData.maritalStatus && <div className="mini-preview-field"><strong>Marital Status:</strong> {formData.maritalStatus}</div>}
+                {formData.dateOfBirth && <div className="mini-preview-field"><strong>Date of Birth:</strong><span>{formData.dateOfBirth}</span></div>}
+                {formData.timeOfBirth && <div className="mini-preview-field"><strong>Time of Birth:</strong><span>{formData.timeOfBirth}</span></div>}
+                {formData.placeOfBirth && <div className="mini-preview-field"><strong>Place of Birth:</strong><span>{formData.placeOfBirth}</span></div>}
+                {formData.height && <div className="mini-preview-field"><strong>Height:</strong><span>{formData.height}</span></div>}
+                {formData.weight && <div className="mini-preview-field"><strong>Weight:</strong><span>{formData.weight}</span></div>}
+                {formData.complexion && <div className="mini-preview-field"><strong>Complexion:</strong><span>{formData.complexion}</span></div>}
+                {formData.bloodGroup && <div className="mini-preview-field"><strong>Blood Group:</strong><span>{formData.bloodGroup}</span></div>}
+                {formData.maritalStatus && <div className="mini-preview-field"><strong>Marital Status:</strong><span>{formData.maritalStatus}</span></div>}
 
                 {/* Education & Career */}
-                {formData.education && <div className="mini-preview-field"><strong>Education:</strong> {formData.education}</div>}
-                {formData.college && <div className="mini-preview-field"><strong>College/University:</strong> {formData.college}</div>}
-                {formData.occupation && <div className="mini-preview-field"><strong>Occupation:</strong> {formData.occupation}</div>}
-                {formData.company && <div className="mini-preview-field"><strong>Company:</strong> {formData.company}</div>}
-                {formData.annualIncome && <div className="mini-preview-field"><strong>Annual Income:</strong> {formData.annualIncome}</div>}
-                {formData.workLocation && <div className="mini-preview-field"><strong>Work Location:</strong> {formData.workLocation}</div>}
+                {formData.education && <div className="mini-preview-field"><strong>Education:</strong><span>{formData.education}</span></div>}
+                {formData.college && <div className="mini-preview-field"><strong>College/University:</strong><span>{formData.college}</span></div>}
+                {formData.occupation && <div className="mini-preview-field"><strong>Occupation:</strong><span>{formData.occupation}</span></div>}
+                {formData.company && <div className="mini-preview-field"><strong>Company:</strong><span>{formData.company}</span></div>}
+                {formData.annualIncome && <div className="mini-preview-field"><strong>Annual Income:</strong><span>{formData.annualIncome}</span></div>}
+                {formData.workLocation && <div className="mini-preview-field"><strong>Work Location:</strong><span>{formData.workLocation}</span></div>}
 
                 {/* Religion Details */}
                 {(formData.caste || formData.subCaste || formData.gotra || formData.rashi || formData.nakshatra || formData.manglik || formData.deity || formData.sect || formData.community || formData.maslak || formData.namazPractice || formData.hijab || formData.arabicName || formData.denomination || formData.churchAffiliation || formData.baptized || formData.sundayService || formData.jatha || formData.amritdhari || formData.keshdhari || formData.gurudwaraVisit) && (
                   <div className="preview-section-label" style={{ color: effectiveColor }}>Religion Details</div>
                 )}
-                {formData.caste && <div className="mini-preview-field"><strong>Caste:</strong> {formData.caste}</div>}
-                {formData.subCaste && <div className="mini-preview-field"><strong>Sub-Caste:</strong> {formData.subCaste}</div>}
-                {formData.gotra && <div className="mini-preview-field"><strong>Gotra:</strong> {formData.gotra}</div>}
-                {formData.rashi && <div className="mini-preview-field"><strong>Rashi:</strong> {formData.rashi}</div>}
-                {formData.nakshatra && <div className="mini-preview-field"><strong>Nakshatra:</strong> {formData.nakshatra}</div>}
-                {formData.manglik && <div className="mini-preview-field"><strong>Manglik:</strong> {formData.manglik}</div>}
-                {formData.deity && <div className="mini-preview-field"><strong>Kul Devta/Devi:</strong> {formData.deity}</div>}
-                {formData.sect && <div className="mini-preview-field"><strong>Sect:</strong> {formData.sect}</div>}
-                {formData.community && <div className="mini-preview-field"><strong>Community:</strong> {formData.community}</div>}
-                {formData.maslak && <div className="mini-preview-field"><strong>Maslak:</strong> {formData.maslak}</div>}
-                {formData.namazPractice && <div className="mini-preview-field"><strong>Namaz Practice:</strong> {formData.namazPractice}</div>}
-                {formData.hijab && <div className="mini-preview-field"><strong>Hijab/Purdah:</strong> {formData.hijab}</div>}
-                {formData.arabicName && <div className="mini-preview-field"><strong>Arabic Name:</strong> {formData.arabicName}</div>}
-                {formData.denomination && <div className="mini-preview-field"><strong>Denomination:</strong> {formData.denomination}</div>}
-                {formData.churchAffiliation && <div className="mini-preview-field"><strong>Church:</strong> {formData.churchAffiliation}</div>}
-                {formData.baptized && <div className="mini-preview-field"><strong>Baptized:</strong> {formData.baptized}</div>}
-                {formData.sundayService && <div className="mini-preview-field"><strong>Church Attendance:</strong> {formData.sundayService}</div>}
-                {formData.jatha && <div className="mini-preview-field"><strong>Jatha:</strong> {formData.jatha}</div>}
-                {formData.amritdhari && <div className="mini-preview-field"><strong>Amritdhari:</strong> {formData.amritdhari}</div>}
-                {formData.keshdhari && <div className="mini-preview-field"><strong>Keshdhari:</strong> {formData.keshdhari}</div>}
-                {formData.gurudwaraVisit && <div className="mini-preview-field"><strong>Gurudwara Visit:</strong> {formData.gurudwaraVisit}</div>}
+                {formData.caste && <div className="mini-preview-field"><strong>Caste:</strong><span>{formData.caste}</span></div>}
+                {formData.subCaste && <div className="mini-preview-field"><strong>Sub-Caste:</strong><span>{formData.subCaste}</span></div>}
+                {formData.gotra && <div className="mini-preview-field"><strong>Gotra:</strong><span>{formData.gotra}</span></div>}
+                {formData.rashi && <div className="mini-preview-field"><strong>Rashi:</strong><span>{formData.rashi}</span></div>}
+                {formData.nakshatra && <div className="mini-preview-field"><strong>Nakshatra:</strong><span>{formData.nakshatra}</span></div>}
+                {formData.manglik && <div className="mini-preview-field"><strong>Manglik:</strong><span>{formData.manglik}</span></div>}
+                {formData.deity && <div className="mini-preview-field"><strong>Kul Devta/Devi:</strong><span>{formData.deity}</span></div>}
+                {formData.sect && <div className="mini-preview-field"><strong>Sect:</strong><span>{formData.sect}</span></div>}
+                {formData.community && <div className="mini-preview-field"><strong>Community:</strong><span>{formData.community}</span></div>}
+                {formData.maslak && <div className="mini-preview-field"><strong>Maslak:</strong><span>{formData.maslak}</span></div>}
+                {formData.namazPractice && <div className="mini-preview-field"><strong>Namaz Practice:</strong><span>{formData.namazPractice}</span></div>}
+                {formData.hijab && <div className="mini-preview-field"><strong>Hijab/Purdah:</strong><span>{formData.hijab}</span></div>}
+                {formData.arabicName && <div className="mini-preview-field"><strong>Arabic Name:</strong><span>{formData.arabicName}</span></div>}
+                {formData.denomination && <div className="mini-preview-field"><strong>Denomination:</strong><span>{formData.denomination}</span></div>}
+                {formData.churchAffiliation && <div className="mini-preview-field"><strong>Church:</strong><span>{formData.churchAffiliation}</span></div>}
+                {formData.baptized && <div className="mini-preview-field"><strong>Baptized:</strong><span>{formData.baptized}</span></div>}
+                {formData.sundayService && <div className="mini-preview-field"><strong>Church Attendance:</strong><span>{formData.sundayService}</span></div>}
+                {formData.jatha && <div className="mini-preview-field"><strong>Jatha:</strong><span>{formData.jatha}</span></div>}
+                {formData.amritdhari && <div className="mini-preview-field"><strong>Amritdhari:</strong><span>{formData.amritdhari}</span></div>}
+                {formData.keshdhari && <div className="mini-preview-field"><strong>Keshdhari:</strong><span>{formData.keshdhari}</span></div>}
+                {formData.gurudwaraVisit && <div className="mini-preview-field"><strong>Gurudwara Visit:</strong><span>{formData.gurudwaraVisit}</span></div>}
+                </div>
 
                 {/* Family Information */}
                 {(formData.fatherName || formData.fatherOccupation || formData.motherName || formData.motherOccupation || formData.siblings || formData.siblingsMarried || formData.familyType || formData.familyValues || formData.familyIncome || formData.nativePlace || formData.currentAddress) && (
                   <div className="preview-section-label" style={{ color: effectiveColor }}>Family Information</div>
                 )}
-                {formData.fatherName && <div className="mini-preview-field"><strong>Father's Name:</strong> {formData.fatherName}</div>}
-                {formData.fatherOccupation && <div className="mini-preview-field"><strong>Father's Occupation:</strong> {formData.fatherOccupation}</div>}
-                {formData.motherName && <div className="mini-preview-field"><strong>Mother's Name:</strong> {formData.motherName}</div>}
-                {formData.motherOccupation && <div className="mini-preview-field"><strong>Mother's Occupation:</strong> {formData.motherOccupation}</div>}
-                {formData.siblings && <div className="mini-preview-field"><strong>Siblings:</strong> {formData.siblings}</div>}
-                {formData.siblingsMarried && <div className="mini-preview-field"><strong>Siblings Married:</strong> {formData.siblingsMarried}</div>}
-                {formData.familyType && <div className="mini-preview-field"><strong>Family Type:</strong> {formData.familyType}</div>}
-                {formData.familyValues && <div className="mini-preview-field"><strong>Family Values:</strong> {formData.familyValues}</div>}
-                {formData.familyIncome && <div className="mini-preview-field"><strong>Family Income:</strong> {formData.familyIncome}</div>}
-                {formData.nativePlace && <div className="mini-preview-field"><strong>Native Place:</strong> {formData.nativePlace}</div>}
-                {formData.currentAddress && <div className="mini-preview-field"><strong>Current Address:</strong> {formData.currentAddress}</div>}
+                {formData.fatherName && <div className="mini-preview-field"><strong>Father's Name:</strong><span>{formData.fatherName}</span></div>}
+                {formData.fatherOccupation && <div className="mini-preview-field"><strong>Father's Occupation:</strong><span>{formData.fatherOccupation}</span></div>}
+                {formData.motherName && <div className="mini-preview-field"><strong>Mother's Name:</strong><span>{formData.motherName}</span></div>}
+                {formData.motherOccupation && <div className="mini-preview-field"><strong>Mother's Occupation:</strong><span>{formData.motherOccupation}</span></div>}
+                {formData.siblings && <div className="mini-preview-field"><strong>Siblings:</strong><span>{formData.siblings}</span></div>}
+                {formData.siblingsMarried && <div className="mini-preview-field"><strong>Siblings Married:</strong><span>{formData.siblingsMarried}</span></div>}
+                {formData.familyType && <div className="mini-preview-field"><strong>Family Type:</strong><span>{formData.familyType}</span></div>}
+                {formData.familyValues && <div className="mini-preview-field"><strong>Family Values:</strong><span>{formData.familyValues}</span></div>}
+                {formData.familyIncome && <div className="mini-preview-field"><strong>Family Income:</strong><span>{formData.familyIncome}</span></div>}
+                {formData.nativePlace && <div className="mini-preview-field"><strong>Native Place:</strong><span>{formData.nativePlace}</span></div>}
+                {formData.currentAddress && <div className="mini-preview-field"><strong>Current Address:</strong><span>{formData.currentAddress}</span></div>}
 
                 {/* Contact Information */}
                 {(formData.phone || formData.email || formData.whatsapp || formData.address) && (
                   <div className="preview-section-label" style={{ color: effectiveColor }}>Contact Information</div>
                 )}
-                {formData.phone && <div className="mini-preview-field"><strong>Phone:</strong> {formData.phone}</div>}
-                {formData.email && <div className="mini-preview-field"><strong>Email:</strong> {formData.email}</div>}
-                {formData.whatsapp && <div className="mini-preview-field"><strong>Alternate No:</strong> {formData.whatsapp}</div>}
-                {formData.address && <div className="mini-preview-field"><strong>Address:</strong> {formData.address}</div>}
+                {formData.phone && <div className="mini-preview-field"><strong>Phone:</strong><span>{formData.phone}</span></div>}
+                {formData.email && <div className="mini-preview-field"><strong>Email:</strong><span>{formData.email}</span></div>}
+                {formData.whatsapp && <div className="mini-preview-field"><strong>Alternate No:</strong><span>{formData.whatsapp}</span></div>}
+                {formData.address && <div className="mini-preview-field"><strong>Address:</strong><span>{formData.address}</span></div>}
 
                 {/* Partner Preferences */}
                 {(formData.partnerAgeRange || formData.partnerHeight || formData.partnerEducation || formData.partnerOccupation || formData.partnerLocation || formData.otherPreferences) && (
                   <div className="preview-section-label" style={{ color: effectiveColor }}>Partner Preferences</div>
                 )}
-                {formData.partnerAgeRange && <div className="mini-preview-field"><strong>Partner Age Range:</strong> {formData.partnerAgeRange}</div>}
-                {formData.partnerHeight && <div className="mini-preview-field"><strong>Partner Height:</strong> {formData.partnerHeight}</div>}
-                {formData.partnerEducation && <div className="mini-preview-field"><strong>Partner Education:</strong> {formData.partnerEducation}</div>}
-                {formData.partnerOccupation && <div className="mini-preview-field"><strong>Partner Occupation:</strong> {formData.partnerOccupation}</div>}
-                {formData.partnerLocation && <div className="mini-preview-field"><strong>Partner Location:</strong> {formData.partnerLocation}</div>}
-                {formData.otherPreferences && <div className="mini-preview-field"><strong>Other Preferences:</strong> {formData.otherPreferences}</div>}
+                {formData.partnerAgeRange && <div className="mini-preview-field"><strong>Partner Age Range:</strong><span>{formData.partnerAgeRange}</span></div>}
+                {formData.partnerHeight && <div className="mini-preview-field"><strong>Partner Height:</strong><span>{formData.partnerHeight}</span></div>}
+                {formData.partnerEducation && <div className="mini-preview-field"><strong>Partner Education:</strong><span>{formData.partnerEducation}</span></div>}
+                {formData.partnerOccupation && <div className="mini-preview-field"><strong>Partner Occupation:</strong><span>{formData.partnerOccupation}</span></div>}
+                {formData.partnerLocation && <div className="mini-preview-field"><strong>Partner Location:</strong><span>{formData.partnerLocation}</span></div>}
+                {formData.otherPreferences && <div className="mini-preview-field"><strong>Other Preferences:</strong><span>{formData.otherPreferences}</span></div>}
 
                 {/* Empty state */}
                 {Object.keys(formData).length === 0 && !photo && (
@@ -981,6 +988,9 @@ const CreateBiodataNew: React.FC = () => {
                 )}
               </div>
               </div>{/* end mini-preview-inner-scroll */}
+
+              {/* Pinned to the box's own bottom edge, matching the download page and PDF */}
+              <div className="mini-preview-brand-credit" style={{ color: effectiveColor }}>biodataforshaadi.com</div>
             </div>{/* end mini-biodata-preview-mini */}
             </div>{/* end preview-scroll-wrapper */}
 

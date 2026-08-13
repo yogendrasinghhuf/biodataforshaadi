@@ -50,15 +50,43 @@ const Preview: React.FC = () => {
     // browser-default 300x150 intrinsic size.
     // html2canvas also doesn't reliably honor CSS object-fit: cover on <img>, so the profile
     // photo is excluded from the capture and its cover-crop is redrawn manually afterward.
+    // The border image is also excluded here — it's drawn separately, stretched to fill the
+    // full A4 page (see below), so the page always looks full even when text content is short,
+    // while the text/photo layer stays at its natural aspect ratio and is never distorted.
     const containerEl = previewRef.current;
     const photoContainerEl = containerEl.querySelector<HTMLElement>('.preview-photo-corner');
     const photoImgEl = photoContainerEl?.querySelector('img');
+    const borderImgEl = containerEl.querySelector<HTMLImageElement>('.preview-border-img');
+
+    // PDF-only spacing tweak: the gap above "Shree Ganesh" is reduced by this many px, applied
+    // ONLY to html2canvas's offscreen clone (never the live containerEl, so the on-screen preview
+    // is untouched). The photo is drawn afterward using the LIVE element's coordinates, so its
+    // destY is shifted up by this same amount to stay in sync with the shifted content —
+    // otherwise the two drift apart exactly like the earlier bug this fixes replaced.
+    const pdfTopSpacingReductionPx = 10;
 
     const canvas = await html2canvas(containerEl, {
       scale: 3,
       useCORS: true,
       backgroundColor: null,
-      ignoreElements: (el) => el.classList.contains('preview-photo-corner')
+      ignoreElements: (el) => el.classList.contains('preview-photo-corner') || el.classList.contains('preview-border-img'),
+      onclone: (clonedDoc) => {
+        const clonedContainer = clonedDoc.querySelector<HTMLElement>('.biodata-preview-mini');
+        if (clonedContainer) {
+          // Several templates (sapphire-classic, crimson-rose, peacock-green, amber-classic,
+          // royal-mandala) set background-color/background-image with !important on their
+          // border-template-* class, which beats a plain style override — only setProperty's
+          // 'important' priority can win, letting the background/border layer (drawn separately,
+          // stretched to fill the page) show through instead of this element's own background.
+          clonedContainer.style.setProperty('background-color', 'transparent', 'important');
+          clonedContainer.style.setProperty('background-image', 'none', 'important');
+        }
+        const clonedContentWrap = clonedDoc.querySelector<HTMLElement>('.preview-mini-content-wrap');
+        if (clonedContentWrap) {
+          const currentPaddingTop = parseFloat(getComputedStyle(clonedContentWrap).paddingTop) || 0;
+          clonedContentWrap.style.setProperty('padding-top', `${Math.max(0, currentPaddingTop - pdfTopSpacingReductionPx)}px`);
+        }
+      }
     });
 
     if (photoContainerEl && photoImgEl?.src) {
@@ -76,7 +104,9 @@ const Preview: React.FC = () => {
       const canvasScaleX = canvas.width / containerRect.width;
       const canvasScaleY = canvas.height / containerRect.height;
       const destX = (photoRect.left - containerRect.left) * canvasScaleX;
-      const destY = (photoRect.top - containerRect.top) * canvasScaleY;
+      // Shifted up by the same PDF-only spacing reduction applied to the clone's padding-top,
+      // so the photo stays aligned with the content that moved up with it instead of drifting.
+      const destY = (photoRect.top - containerRect.top - pdfTopSpacingReductionPx) * canvasScaleY;
       const destW = photoRect.width * canvasScaleX;
       const destH = photoRect.height * canvasScaleY;
 
@@ -141,37 +171,57 @@ const Preview: React.FC = () => {
 
     const imgData = canvas.toDataURL('image/png');
 
-    // A4 in mm — the biodata artwork's real aspect ratio doesn't match A4's, so it's scaled to
-    // fit entirely within the page (whichever dimension is the tighter constraint) and centered.
-    // This never crops any content — content length varies per user, so a fixed crop amount
-    // that's safe for one biodata can clip real text/border on another with more filled fields.
     const pageWidthMm = 210;
     const pageHeightMm = 297;
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+
+    // Background fill, full bleed — always safe to stretch since it's a flat color.
+    const bgColor = template?.colors.background || '#ffffff';
+    doc.setFillColor(bgColor);
+    doc.rect(0, 0, pageWidthMm, pageHeightMm, 'F');
+
+    // Border artwork, stretched to fill the entire page — a decorative frame/pattern reads fine
+    // stretched, unlike text, so this is what makes the page look full even on short biodatas.
+    // jsPDF can't embed an SVG data URI directly, so it's rasterized to PNG on an offscreen
+    // canvas first, at a resolution matching the A4 page at print quality.
+    if (borderImgEl?.src) {
+      const borderSourceImg = new Image();
+      await new Promise<void>((resolve, reject) => {
+        borderSourceImg.onload = () => resolve();
+        borderSourceImg.onerror = () => reject(new Error('border image failed to load'));
+        borderSourceImg.src = borderImgEl.src;
+      });
+      await borderSourceImg.decode();
+
+      const mmToPx = 12; // ~300 DPI at A4 dimensions
+      const borderCanvas = document.createElement('canvas');
+      borderCanvas.width = pageWidthMm * mmToPx;
+      borderCanvas.height = pageHeightMm * mmToPx;
+      const borderCtx = borderCanvas.getContext('2d');
+      if (borderCtx) {
+        borderCtx.drawImage(borderSourceImg, 0, 0, borderCanvas.width, borderCanvas.height);
+        doc.addImage(borderCanvas.toDataURL('image/png'), 'PNG', 0, 0, pageWidthMm, pageHeightMm);
+      }
+    }
+
+    // Text/photo content layer, kept at its natural aspect ratio and centered so nothing is
+    // ever distorted or cropped — this never changes regardless of how much content is filled in.
     const artworkAspect = canvas.width / canvas.height;
     const pageAspect = pageWidthMm / pageHeightMm;
 
     let imgWidthMm: number;
     let imgHeightMm: number;
     if (artworkAspect > pageAspect) {
-      // Artwork is relatively wider than the page — width is the limiting dimension.
       imgWidthMm = pageWidthMm;
       imgHeightMm = imgWidthMm / artworkAspect;
     } else {
-      // Artwork is relatively taller than the page — height is the limiting dimension.
       imgHeightMm = pageHeightMm;
       imgWidthMm = imgHeightMm * artworkAspect;
     }
     const xOffset = (pageWidthMm - imgWidthMm) / 2;
     const yOffset = (pageHeightMm - imgHeightMm) / 2;
 
-    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
     doc.addImage(imgData, 'PNG', xOffset, yOffset, imgWidthMm, imgHeightMm);
-
-    // Brand credit sits just above the artwork's own bottom edge, inside the template, in the
-    // template's own border color so it reads as part of the design rather than an overlay.
-    doc.setFontSize(8);
-    doc.setTextColor(effectiveColor);
-    doc.text('biodataforshaadi.com', pageWidthMm / 2, yOffset + imgHeightMm - 10, { align: 'center' });
 
     return doc;
   };
@@ -358,88 +408,94 @@ const Preview: React.FC = () => {
                   </h2>
                 )}
 
+                {/* Wraps Personal Details + Religion Details so a min-height (applied via CSS
+                    when a photo exists) can push Family Information and everything after it
+                    below the photo, instead of letting a short Personal Details section leave
+                    a later section's full-width label/divider running behind the photo. */}
+                <div className="preview-fields-before-photo-clear">
                 {/* Personal Information */}
                 {(formData.dateOfBirth || formData.timeOfBirth || formData.placeOfBirth || formData.height || formData.weight || formData.complexion || formData.bloodGroup || formData.maritalStatus || formData.education || formData.college || formData.occupation || formData.company || formData.annualIncome || formData.workLocation) && (
                   <div className="preview-section-label" style={{ color: effectiveColor }}>Personal Details</div>
                 )}
-                {formData.dateOfBirth && <div className="preview-field"><strong>Date of Birth:</strong> {formData.dateOfBirth}</div>}
-                {formData.timeOfBirth && <div className="preview-field"><strong>Time of Birth:</strong> {formData.timeOfBirth}</div>}
-                {formData.placeOfBirth && <div className="preview-field"><strong>Place of Birth:</strong> {formData.placeOfBirth}</div>}
-                {formData.height && <div className="preview-field"><strong>Height:</strong> {formData.height}</div>}
-                {formData.weight && <div className="preview-field"><strong>Weight:</strong> {formData.weight}</div>}
-                {formData.complexion && <div className="preview-field"><strong>Complexion:</strong> {formData.complexion}</div>}
-                {formData.bloodGroup && <div className="preview-field"><strong>Blood Group:</strong> {formData.bloodGroup}</div>}
-                {formData.maritalStatus && <div className="preview-field"><strong>Marital Status:</strong> {formData.maritalStatus}</div>}
+                {formData.dateOfBirth && <div className="preview-field"><strong>Date of Birth:</strong><span>{formData.dateOfBirth}</span></div>}
+                {formData.timeOfBirth && <div className="preview-field"><strong>Time of Birth:</strong><span>{formData.timeOfBirth}</span></div>}
+                {formData.placeOfBirth && <div className="preview-field"><strong>Place of Birth:</strong><span>{formData.placeOfBirth}</span></div>}
+                {formData.height && <div className="preview-field"><strong>Height:</strong><span>{formData.height}</span></div>}
+                {formData.weight && <div className="preview-field"><strong>Weight:</strong><span>{formData.weight}</span></div>}
+                {formData.complexion && <div className="preview-field"><strong>Complexion:</strong><span>{formData.complexion}</span></div>}
+                {formData.bloodGroup && <div className="preview-field"><strong>Blood Group:</strong><span>{formData.bloodGroup}</span></div>}
+                {formData.maritalStatus && <div className="preview-field"><strong>Marital Status:</strong><span>{formData.maritalStatus}</span></div>}
 
                 {/* Education & Career */}
-                {formData.education && <div className="preview-field"><strong>Education:</strong> {formData.education}</div>}
-                {formData.college && <div className="preview-field"><strong>College/University:</strong> {formData.college}</div>}
-                {formData.occupation && <div className="preview-field"><strong>Occupation:</strong> {formData.occupation}</div>}
-                {formData.company && <div className="preview-field"><strong>Company:</strong> {formData.company}</div>}
-                {formData.annualIncome && <div className="preview-field"><strong>Annual Income:</strong> {formData.annualIncome}</div>}
-                {formData.workLocation && <div className="preview-field"><strong>Work Location:</strong> {formData.workLocation}</div>}
+                {formData.education && <div className="preview-field"><strong>Education:</strong><span>{formData.education}</span></div>}
+                {formData.college && <div className="preview-field"><strong>College/University:</strong><span>{formData.college}</span></div>}
+                {formData.occupation && <div className="preview-field"><strong>Occupation:</strong><span>{formData.occupation}</span></div>}
+                {formData.company && <div className="preview-field"><strong>Company:</strong><span>{formData.company}</span></div>}
+                {formData.annualIncome && <div className="preview-field"><strong>Annual Income:</strong><span>{formData.annualIncome}</span></div>}
+                {formData.workLocation && <div className="preview-field"><strong>Work Location:</strong><span>{formData.workLocation}</span></div>}
 
                 {/* Religion Details */}
                 {(formData.caste || formData.subCaste || formData.gotra || formData.rashi || formData.nakshatra || formData.manglik || formData.deity || formData.sect || formData.community || formData.maslak || formData.namazPractice || formData.hijab || formData.arabicName || formData.denomination || formData.churchAffiliation || formData.baptized || formData.sundayService || formData.jatha || formData.amritdhari || formData.keshdhari || formData.gurudwaraVisit) && (
                   <div className="preview-section-label" style={{ color: effectiveColor }}>Religion Details</div>
                 )}
-                {formData.caste && <div className="preview-field"><strong>Caste:</strong> {formData.caste}</div>}
-                {formData.subCaste && <div className="preview-field"><strong>Sub-Caste:</strong> {formData.subCaste}</div>}
-                {formData.gotra && <div className="preview-field"><strong>Gotra:</strong> {formData.gotra}</div>}
-                {formData.rashi && <div className="preview-field"><strong>Rashi:</strong> {formData.rashi}</div>}
-                {formData.nakshatra && <div className="preview-field"><strong>Nakshatra:</strong> {formData.nakshatra}</div>}
-                {formData.manglik && <div className="preview-field"><strong>Manglik:</strong> {formData.manglik}</div>}
-                {formData.deity && <div className="preview-field"><strong>Kul Devta/Devi:</strong> {formData.deity}</div>}
-                {formData.sect && <div className="preview-field"><strong>Sect:</strong> {formData.sect}</div>}
-                {formData.community && <div className="preview-field"><strong>Community:</strong> {formData.community}</div>}
-                {formData.maslak && <div className="preview-field"><strong>Maslak:</strong> {formData.maslak}</div>}
-                {formData.namazPractice && <div className="preview-field"><strong>Namaz Practice:</strong> {formData.namazPractice}</div>}
-                {formData.hijab && <div className="preview-field"><strong>Hijab/Purdah:</strong> {formData.hijab}</div>}
-                {formData.arabicName && <div className="preview-field"><strong>Arabic Name:</strong> {formData.arabicName}</div>}
-                {formData.denomination && <div className="preview-field"><strong>Denomination:</strong> {formData.denomination}</div>}
-                {formData.churchAffiliation && <div className="preview-field"><strong>Church:</strong> {formData.churchAffiliation}</div>}
-                {formData.baptized && <div className="preview-field"><strong>Baptized:</strong> {formData.baptized}</div>}
-                {formData.sundayService && <div className="preview-field"><strong>Church Attendance:</strong> {formData.sundayService}</div>}
-                {formData.jatha && <div className="preview-field"><strong>Jatha:</strong> {formData.jatha}</div>}
-                {formData.amritdhari && <div className="preview-field"><strong>Amritdhari:</strong> {formData.amritdhari}</div>}
-                {formData.keshdhari && <div className="preview-field"><strong>Keshdhari:</strong> {formData.keshdhari}</div>}
-                {formData.gurudwaraVisit && <div className="preview-field"><strong>Gurudwara Visit:</strong> {formData.gurudwaraVisit}</div>}
+                {formData.caste && <div className="preview-field"><strong>Caste:</strong><span>{formData.caste}</span></div>}
+                {formData.subCaste && <div className="preview-field"><strong>Sub-Caste:</strong><span>{formData.subCaste}</span></div>}
+                {formData.gotra && <div className="preview-field"><strong>Gotra:</strong><span>{formData.gotra}</span></div>}
+                {formData.rashi && <div className="preview-field"><strong>Rashi:</strong><span>{formData.rashi}</span></div>}
+                {formData.nakshatra && <div className="preview-field"><strong>Nakshatra:</strong><span>{formData.nakshatra}</span></div>}
+                {formData.manglik && <div className="preview-field"><strong>Manglik:</strong><span>{formData.manglik}</span></div>}
+                {formData.deity && <div className="preview-field"><strong>Kul Devta/Devi:</strong><span>{formData.deity}</span></div>}
+                {formData.sect && <div className="preview-field"><strong>Sect:</strong><span>{formData.sect}</span></div>}
+                {formData.community && <div className="preview-field"><strong>Community:</strong><span>{formData.community}</span></div>}
+                {formData.maslak && <div className="preview-field"><strong>Maslak:</strong><span>{formData.maslak}</span></div>}
+                {formData.namazPractice && <div className="preview-field"><strong>Namaz Practice:</strong><span>{formData.namazPractice}</span></div>}
+                {formData.hijab && <div className="preview-field"><strong>Hijab/Purdah:</strong><span>{formData.hijab}</span></div>}
+                {formData.arabicName && <div className="preview-field"><strong>Arabic Name:</strong><span>{formData.arabicName}</span></div>}
+                {formData.denomination && <div className="preview-field"><strong>Denomination:</strong><span>{formData.denomination}</span></div>}
+                {formData.churchAffiliation && <div className="preview-field"><strong>Church:</strong><span>{formData.churchAffiliation}</span></div>}
+                {formData.baptized && <div className="preview-field"><strong>Baptized:</strong><span>{formData.baptized}</span></div>}
+                {formData.sundayService && <div className="preview-field"><strong>Church Attendance:</strong><span>{formData.sundayService}</span></div>}
+                {formData.jatha && <div className="preview-field"><strong>Jatha:</strong><span>{formData.jatha}</span></div>}
+                {formData.amritdhari && <div className="preview-field"><strong>Amritdhari:</strong><span>{formData.amritdhari}</span></div>}
+                {formData.keshdhari && <div className="preview-field"><strong>Keshdhari:</strong><span>{formData.keshdhari}</span></div>}
+                {formData.gurudwaraVisit && <div className="preview-field"><strong>Gurudwara Visit:</strong><span>{formData.gurudwaraVisit}</span></div>}
+                </div>
 
                 {/* Family Details */}
                 {(formData.fatherName || formData.fatherOccupation || formData.motherName || formData.motherOccupation || formData.siblings || formData.siblingsMarried || formData.familyType || formData.familyValues || formData.familyIncome || formData.nativePlace || formData.currentAddress) && (
                   <div className="preview-section-label" style={{ color: effectiveColor }}>Family Information</div>
                 )}
-                {formData.fatherName && <div className="preview-field"><strong>Father's Name:</strong> {formData.fatherName}</div>}
-                {formData.fatherOccupation && <div className="preview-field"><strong>Father's Occupation:</strong> {formData.fatherOccupation}</div>}
-                {formData.motherName && <div className="preview-field"><strong>Mother's Name:</strong> {formData.motherName}</div>}
-                {formData.motherOccupation && <div className="preview-field"><strong>Mother's Occupation:</strong> {formData.motherOccupation}</div>}
-                {formData.siblings && <div className="preview-field"><strong>Siblings:</strong> {formData.siblings}</div>}
-                {formData.siblingsMarried && <div className="preview-field"><strong>Siblings Married:</strong> {formData.siblingsMarried}</div>}
-                {formData.familyType && <div className="preview-field"><strong>Family Type:</strong> {formData.familyType}</div>}
-                {formData.familyValues && <div className="preview-field"><strong>Family Values:</strong> {formData.familyValues}</div>}
-                {formData.familyIncome && <div className="preview-field"><strong>Family Income:</strong> {formData.familyIncome}</div>}
-                {formData.nativePlace && <div className="preview-field"><strong>Native Place:</strong> {formData.nativePlace}</div>}
-                {formData.currentAddress && <div className="preview-field"><strong>Current Address:</strong> {formData.currentAddress}</div>}
+                {formData.fatherName && <div className="preview-field"><strong>Father's Name:</strong><span>{formData.fatherName}</span></div>}
+                {formData.fatherOccupation && <div className="preview-field"><strong>Father's Occupation:</strong><span>{formData.fatherOccupation}</span></div>}
+                {formData.motherName && <div className="preview-field"><strong>Mother's Name:</strong><span>{formData.motherName}</span></div>}
+                {formData.motherOccupation && <div className="preview-field"><strong>Mother's Occupation:</strong><span>{formData.motherOccupation}</span></div>}
+                {formData.siblings && <div className="preview-field"><strong>Siblings:</strong><span>{formData.siblings}</span></div>}
+                {formData.siblingsMarried && <div className="preview-field"><strong>Siblings Married:</strong><span>{formData.siblingsMarried}</span></div>}
+                {formData.familyType && <div className="preview-field"><strong>Family Type:</strong><span>{formData.familyType}</span></div>}
+                {formData.familyValues && <div className="preview-field"><strong>Family Values:</strong><span>{formData.familyValues}</span></div>}
+                {formData.familyIncome && <div className="preview-field"><strong>Family Income:</strong><span>{formData.familyIncome}</span></div>}
+                {formData.nativePlace && <div className="preview-field"><strong>Native Place:</strong><span>{formData.nativePlace}</span></div>}
+                {formData.currentAddress && <div className="preview-field"><strong>Current Address:</strong><span>{formData.currentAddress}</span></div>}
 
                 {/* Contact Information */}
                 {(formData.phone || formData.email || formData.whatsapp || formData.address) && (
                   <div className="preview-section-label" style={{ color: effectiveColor }}>Contact Information</div>
                 )}
-                {formData.phone && <div className="preview-field"><strong>Phone:</strong> {formData.phone}</div>}
-                {formData.email && <div className="preview-field"><strong>Email:</strong> {formData.email}</div>}
-                {formData.whatsapp && <div className="preview-field"><strong>Alternate No:</strong> {formData.whatsapp}</div>}
-                {formData.address && <div className="preview-field"><strong>Address:</strong> {formData.address}</div>}
+                {formData.phone && <div className="preview-field"><strong>Phone:</strong><span>{formData.phone}</span></div>}
+                {formData.email && <div className="preview-field"><strong>Email:</strong><span>{formData.email}</span></div>}
+                {formData.whatsapp && <div className="preview-field"><strong>Alternate No:</strong><span>{formData.whatsapp}</span></div>}
+                {formData.address && <div className="preview-field"><strong>Address:</strong><span>{formData.address}</span></div>}
 
                 {/* Partner Preferences */}
                 {(formData.partnerAgeRange || formData.partnerHeight || formData.partnerEducation || formData.partnerOccupation || formData.partnerLocation || formData.otherPreferences) && (
                   <div className="preview-section-label" style={{ color: effectiveColor }}>Partner Preferences</div>
                 )}
-                {formData.partnerAgeRange && <div className="preview-field"><strong>Partner Age Range:</strong> {formData.partnerAgeRange}</div>}
-                {formData.partnerHeight && <div className="preview-field"><strong>Partner Height:</strong> {formData.partnerHeight}</div>}
-                {formData.partnerEducation && <div className="preview-field"><strong>Partner Education:</strong> {formData.partnerEducation}</div>}
-                {formData.partnerOccupation && <div className="preview-field"><strong>Partner Occupation:</strong> {formData.partnerOccupation}</div>}
-                {formData.partnerLocation && <div className="preview-field"><strong>Partner Location:</strong> {formData.partnerLocation}</div>}
-                {formData.otherPreferences && <div className="preview-field"><strong>Other Preferences:</strong> {formData.otherPreferences}</div>}
+                {formData.partnerAgeRange && <div className="preview-field"><strong>Partner Age Range:</strong><span>{formData.partnerAgeRange}</span></div>}
+                {formData.partnerHeight && <div className="preview-field"><strong>Partner Height:</strong><span>{formData.partnerHeight}</span></div>}
+                {formData.partnerEducation && <div className="preview-field"><strong>Partner Education:</strong><span>{formData.partnerEducation}</span></div>}
+                {formData.partnerOccupation && <div className="preview-field"><strong>Partner Occupation:</strong><span>{formData.partnerOccupation}</span></div>}
+                {formData.partnerLocation && <div className="preview-field"><strong>Partner Location:</strong><span>{formData.partnerLocation}</span></div>}
+                {formData.otherPreferences && <div className="preview-field"><strong>Other Preferences:</strong><span>{formData.otherPreferences}</span></div>}
 
                 {/* Empty state */}
                 {Object.keys(formData).length === 0 && !photo && (
@@ -450,6 +506,9 @@ const Preview: React.FC = () => {
               </div>
             </div> {/* preview-mini-content-wrap */}
             </div> {/* preview-inner-scroll */}
+
+            {/* Pinned to the box's own bottom edge (not the flowing content), matching the PDF's placement above the template's border */}
+            <div className="preview-brand-credit" style={{ color: effectiveColor }}>biodataforshaadi.com</div>
           </div> {/* biodata-preview-mini */}
           </div> {/* preview-scroll-wrapper */}
 

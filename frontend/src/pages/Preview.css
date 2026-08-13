@@ -200,10 +200,24 @@
 
 /* Content wrap inside preview-inner-scroll — padding scaled to match the mini-preview's proportion (22px at 360px wide) at this box's larger 650px width */
 .preview-mini-content-wrap {
-  padding: 40px;
+  padding: 16px 40px 40px;
   display: flex;
   flex-direction: column;
   min-height: 500px;
+}
+
+/* Mirrors the PDF's brand credit line — pinned near the box's bottom edge, above the border image, regardless of content length */
+.preview-brand-credit {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 26px;
+  z-index: 11;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  opacity: 0.85;
+  pointer-events: none;
 }
 
 
