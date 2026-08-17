@@ -230,33 +230,38 @@ const Preview: React.FC = () => {
     for (const photoFile of additionalPhotos) {
       doc.addPage();
 
-      if (borderImgEl?.src) {
-        const pageBorderSourceImg = new Image();
-        await new Promise<void>((resolve, reject) => {
-          pageBorderSourceImg.onload = () => resolve();
-          pageBorderSourceImg.onerror = () => reject(new Error('border image failed to load for additional photo page'));
-          pageBorderSourceImg.src = borderImgEl.src;
-        });
-        await pageBorderSourceImg.decode();
-
-        const mmToPx = 12;
-        const pageBorderCanvas = document.createElement('canvas');
-        pageBorderCanvas.width = pageWidthMm * mmToPx;
-        pageBorderCanvas.height = pageHeightMm * mmToPx;
-        const pageBorderCtx = pageBorderCanvas.getContext('2d');
-        if (pageBorderCtx) {
-          pageBorderCtx.drawImage(pageBorderSourceImg, 0, 0, pageBorderCanvas.width, pageBorderCanvas.height);
-          doc.addImage(pageBorderCanvas.toDataURL('image/png'), 'PNG', 0, 0, pageWidthMm, pageHeightMm);
-        }
-      }
-
+      // Border AND photo are both inside this one try/catch — a border-load failure must skip
+      // just this page like a photo-load failure does, not reject generatePDF() entirely and
+      // abort the whole download (that would discard the already-rendered main page and any
+      // other successfully-loaded extra photos, silently, since handleDownloadPDF has no catch).
+      let extraPhotoUrl: string | undefined;
       try {
+        if (borderImgEl?.src) {
+          const pageBorderSourceImg = new Image();
+          await new Promise<void>((resolve, reject) => {
+            pageBorderSourceImg.onload = () => resolve();
+            pageBorderSourceImg.onerror = () => reject(new Error('border image failed to load for additional photo page'));
+            pageBorderSourceImg.src = borderImgEl.src;
+          });
+          await pageBorderSourceImg.decode();
+
+          const mmToPx = 12;
+          const pageBorderCanvas = document.createElement('canvas');
+          pageBorderCanvas.width = pageWidthMm * mmToPx;
+          pageBorderCanvas.height = pageHeightMm * mmToPx;
+          const pageBorderCtx = pageBorderCanvas.getContext('2d');
+          if (pageBorderCtx) {
+            pageBorderCtx.drawImage(pageBorderSourceImg, 0, 0, pageBorderCanvas.width, pageBorderCanvas.height);
+            doc.addImage(pageBorderCanvas.toDataURL('image/png'), 'PNG', 0, 0, pageWidthMm, pageHeightMm);
+          }
+        }
+
         const extraPhotoImg = new Image();
-        const extraPhotoUrl = URL.createObjectURL(photoFile);
+        extraPhotoUrl = URL.createObjectURL(photoFile);
         await new Promise<void>((resolve, reject) => {
           extraPhotoImg.onload = () => resolve();
           extraPhotoImg.onerror = () => reject(new Error('additional photo failed to load'));
-          extraPhotoImg.src = extraPhotoUrl;
+          extraPhotoImg.src = extraPhotoUrl!;
         });
         await extraPhotoImg.decode();
 
@@ -291,9 +296,14 @@ const Preview: React.FC = () => {
 
           doc.addImage(extraPhotoCanvas.toDataURL('image/png'), 'PNG', photoXOffset, photoYOffset, photoWidthMm, photoHeightMm);
         }
-        URL.revokeObjectURL(extraPhotoUrl);
       } catch (error) {
         console.error('Skipping an additional photo page:', error);
+      } finally {
+        // Runs whether the photo loaded successfully or not, so a failed load never leaks the
+        // blob URL — previously this was only revoked on the success path.
+        if (extraPhotoUrl) {
+          URL.revokeObjectURL(extraPhotoUrl);
+        }
       }
     }
 
