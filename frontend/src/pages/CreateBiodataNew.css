@@ -1735,6 +1735,35 @@
   pointer-events: none;
 }
 
+.mini-additional-photo-page {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 210 / 297;
+  background: #ffffff;
+  margin-top: 12px;
+  overflow: hidden;
+}
+
+.mini-additional-photo-page-border {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  object-fit: fill;
+  pointer-events: none;
+}
+
+.mini-additional-photo-page-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  object-fit: contain;
+}
 
 /* Custom border overlay for preview with dynamic color */
 .preview-custom-border {

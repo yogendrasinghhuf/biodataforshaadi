@@ -1049,6 +1049,23 @@ const CreateBiodataNew: React.FC = () => {
               {/* Pinned to the box's own bottom edge, matching the download page and PDF */}
               <div className="mini-preview-brand-credit" style={{ color: effectiveColor }}>biodataforshaadi.com</div>
             </div>{/* end mini-biodata-preview-mini */}
+
+            {/* Additional photo pages — plain white background, template border only, no fields */}
+            {additionalPhotos.map((file, index) => (
+              <div key={index} className="mini-additional-photo-page">
+                <img
+                  className="mini-additional-photo-page-border"
+                  src={generateBorderSVG(effectiveColor, template?.id || 'elegant-red', true).replace(/^url\("/, '').replace(/"\)$/, '')}
+                  alt=""
+                  aria-hidden="true"
+                />
+                <img
+                  className="mini-additional-photo-page-img"
+                  src={URL.createObjectURL(file)}
+                  alt={`Additional photo ${index + 1}`}
+                />
+              </div>
+            ))}
             </div>{/* end preview-scroll-wrapper */}
 
             {/* Action Buttons - Outside the preview box */}
