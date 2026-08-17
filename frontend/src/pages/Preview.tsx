@@ -223,6 +223,77 @@ const Preview: React.FC = () => {
 
     doc.addImage(imgData, 'PNG', xOffset, yOffset, imgWidthMm, imgHeightMm);
 
+    // Additional photo pages — each gets its own page: the same template border rasterized
+    // fresh (reusing the exact rasterization step used for the main page above), on a plain
+    // white background, with the photo centered inside at its own true aspect ratio so it's
+    // never distorted or cropped, matching the main page's text/photo layer.
+    for (const photoFile of additionalPhotos) {
+      doc.addPage();
+
+      if (borderImgEl?.src) {
+        const pageBorderSourceImg = new Image();
+        await new Promise<void>((resolve, reject) => {
+          pageBorderSourceImg.onload = () => resolve();
+          pageBorderSourceImg.onerror = () => reject(new Error('border image failed to load for additional photo page'));
+          pageBorderSourceImg.src = borderImgEl.src;
+        });
+        await pageBorderSourceImg.decode();
+
+        const mmToPx = 12;
+        const pageBorderCanvas = document.createElement('canvas');
+        pageBorderCanvas.width = pageWidthMm * mmToPx;
+        pageBorderCanvas.height = pageHeightMm * mmToPx;
+        const pageBorderCtx = pageBorderCanvas.getContext('2d');
+        if (pageBorderCtx) {
+          pageBorderCtx.drawImage(pageBorderSourceImg, 0, 0, pageBorderCanvas.width, pageBorderCanvas.height);
+          doc.addImage(pageBorderCanvas.toDataURL('image/png'), 'PNG', 0, 0, pageWidthMm, pageHeightMm);
+        }
+      }
+
+      try {
+        const extraPhotoImg = new Image();
+        const extraPhotoUrl = URL.createObjectURL(photoFile);
+        await new Promise<void>((resolve, reject) => {
+          extraPhotoImg.onload = () => resolve();
+          extraPhotoImg.onerror = () => reject(new Error('additional photo failed to load'));
+          extraPhotoImg.src = extraPhotoUrl;
+        });
+        await extraPhotoImg.decode();
+
+        // Drawn onto an intermediate canvas and passed to jsPDF as a data URL — matching the
+        // exact pattern already proven for the border and main content above. jsPDF's addImage
+        // expects a data URL/base64 string (not a raw Image element), and uploaded photos can be
+        // PNG/WEBP/etc, not reliably JPEG, so re-encoding via canvas.toDataURL avoids a format
+        // mismatch with the fixed 'JPEG' string a raw Image call would otherwise require.
+        const extraPhotoCanvas = document.createElement('canvas');
+        extraPhotoCanvas.width = extraPhotoImg.naturalWidth;
+        extraPhotoCanvas.height = extraPhotoImg.naturalHeight;
+        const extraPhotoCtx = extraPhotoCanvas.getContext('2d');
+        if (extraPhotoCtx) {
+          extraPhotoCtx.drawImage(extraPhotoImg, 0, 0);
+
+          const photoAspect = extraPhotoImg.naturalWidth / extraPhotoImg.naturalHeight;
+          const pageAspectForPhoto = pageWidthMm / pageHeightMm;
+          let photoWidthMm: number;
+          let photoHeightMm: number;
+          if (photoAspect > pageAspectForPhoto) {
+            photoWidthMm = pageWidthMm;
+            photoHeightMm = photoWidthMm / photoAspect;
+          } else {
+            photoHeightMm = pageHeightMm;
+            photoWidthMm = photoHeightMm * photoAspect;
+          }
+          const photoXOffset = (pageWidthMm - photoWidthMm) / 2;
+          const photoYOffset = (pageHeightMm - photoHeightMm) / 2;
+
+          doc.addImage(extraPhotoCanvas.toDataURL('image/png'), 'PNG', photoXOffset, photoYOffset, photoWidthMm, photoHeightMm);
+        }
+        URL.revokeObjectURL(extraPhotoUrl);
+      } catch (error) {
+        console.error('Skipping an additional photo page:', error);
+      }
+    }
+
     return doc;
   };
 
