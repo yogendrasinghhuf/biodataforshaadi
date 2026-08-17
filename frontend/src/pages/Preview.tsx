@@ -511,6 +511,23 @@ const Preview: React.FC = () => {
             {/* Pinned to the box's own bottom edge (not the flowing content), matching the PDF's placement above the template's border */}
             <div className="preview-brand-credit" style={{ color: effectiveColor }}>biodataforshaadi.com</div>
           </div> {/* biodata-preview-mini */}
+
+          {/* Additional photo pages — plain white background, template border only, no fields */}
+          {additionalPhotos.map((file: File, index: number) => (
+            <div key={index} className="additional-photo-page">
+              <img
+                className="additional-photo-page-border"
+                src={generateBorderSVG(effectiveColor, template?.id || 'elegant-red').replace(/^url\("/, '').replace(/"\)$/, '')}
+                alt=""
+                aria-hidden="true"
+              />
+              <img
+                className="additional-photo-page-img"
+                src={URL.createObjectURL(file)}
+                alt={`Additional photo ${index + 1}`}
+              />
+            </div>
+          ))}
           </div> {/* preview-scroll-wrapper */}
 
           {/* Order Summary Card */}
