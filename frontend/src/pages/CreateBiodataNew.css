@@ -628,15 +628,30 @@
   gap: 12px;
 }
 
-/* Smaller upload placeholder than the main profile-photo box, scoped here only —
-   .photo-placeholder-small/.photo-icon stay unchanged for the profile photo upload. */
+/* Smaller, distinctly-styled upload placeholder than the main profile-photo box, scoped
+   here only — .photo-placeholder-small/.photo-icon/.photo-upload-label stay unchanged for
+   the profile photo upload. Green accent (vs. the profile photo's red) so the two sections
+   read as visually distinct while still matching the app's existing color language. */
+.additional-photos-upload .photo-upload-label {
+  border-color: var(--gray-200);
+  background: var(--gray-50);
+  border-radius: 10px;
+}
+
+.additional-photos-upload .photo-upload-label:hover {
+  border-color: var(--primary-green);
+  background: rgba(22, 163, 74, 0.04);
+}
+
 .additional-photos-upload .photo-placeholder-small {
-  padding: 18px 24px;
-  gap: 6px;
+  padding: 16px 24px;
+  gap: 4px;
+  color: var(--gray-600);
 }
 
 .additional-photos-upload .photo-icon {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
+  color: var(--primary-green);
 }
 
 .photo-upload-label-disabled {
