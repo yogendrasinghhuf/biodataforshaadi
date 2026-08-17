@@ -6,12 +6,12 @@
 
 ## Goal
 
-Let users optionally upload up to 5 extra photos (in addition to the existing single profile photo shown inside the template). These extra photos are NOT part of the templated biodata design — they appear as plain, borderless photo pages appended after the main biodata page, both in the on-screen preview and in the downloaded PDF.
+Let users optionally upload up to 5 extra photos (in addition to the existing single profile photo shown inside the template). These extra photos are not part of the templated biodata layout (no fields, no header) — they appear as their own pages appended after the main biodata page, each framed with the selected template's decorative border on a white background, both in the on-screen preview and in the downloaded PDF.
 
 ## Out of Scope
 
 - Cropping or shape (rectangle/circle) selection for extra photos — uploaded and used as-is, full photo, no crop modal.
-- Template border/background on extra photo pages — plain white page, just the photo.
+- Template background color on extra photo pages — background stays white; only the border color/pattern matches the selected template.
 - Reordering extra photos, drag-and-drop, or per-photo captions.
 - Persisting extra photos across a browser refresh — same limitation the existing single profile photo already has (`File` objects aren't stored in the `localStorage` draft; they only survive via React Router navigation state between Create ↔ Download).
 - Any change to the main biodata page's own layout, border, or PDF generation logic for that first page — it stays exactly as it is today.
@@ -32,17 +32,18 @@ Let users optionally upload up to 5 extra photos (in addition to the existing si
 ## On-Screen Preview (both CreateBiodataNew.tsx mini preview and Preview.tsx download page)
 
 - Below the existing bordered biodata box (inside the same scrollable container each file already uses), render one additional block per uploaded extra photo, stacked vertically in upload order.
-- Each block: plain white background, no template border, `aspect-ratio: 210 / 297` (A4) container with the photo inside it via `object-fit: contain`, centered — matching proportions of the box above it so it visually reads as "the next page."
+- Each block: white background, `aspect-ratio: 210 / 297` (A4) container, framed with the same border `<img>` technique already used for the main box (the same `generateBorderSVG(effectiveColor, templateId)` data-URI, sized to this block via CSS, `position: absolute; inset: 0`) — so the border color/pattern matches the selected template. The photo sits inside via `object-fit: contain`, centered, below the border layer (`z-index` below the border image so the frame renders on top, matching the existing photo/border layering convention already used in these files).
 - This uses the existing scroll container in each file — no new scroll wrapper needed, since the container already scrolls to fit the (now taller) content.
-- Implemented in both files independently (mirroring the project's existing pattern of duplicating preview-rendering logic between `CreateBiodataNew.tsx` and `Preview.tsx`), each reading its own local `additionalPhotos` state/prop.
+- Implemented in both files independently (mirroring the project's existing pattern of duplicating preview-rendering logic between `CreateBiodataNew.tsx` and `Preview.tsx`), each reading its own local `additionalPhotos` state/prop and reusing that file's own existing `generateBorderSVG` copy.
 
 ## PDF Generation (Preview.tsx generatePDF())
 
 - After the existing single-page logic finishes (border + background + content, unchanged), loop over `additionalPhotos`. For each one:
   - `doc.addPage()`
-  - Load the photo as an `Image()`, await `.decode()`
-  - Compute a centered, aspect-preserving fit within the new page (same fit-math pattern as the main content layer: whichever dimension is the tighter constraint determines the scale, centered on both axes) — this guarantees the photo never distorts or crops, just like the main page's text/photo layer.
-  - `doc.addImage()` the photo onto the new page. No border, no background fill (plain white, jsPDF's default page background).
+  - Rasterize the template's border SVG to a page-sized PNG exactly the way the main page already does (reusing that same rasterization step, just invoked again for this page), then `doc.addImage()` it full-page — this is the one piece of already-working code this feature reuses as-is.
+  - Load the photo as an `Image()`, await `.decode()`.
+  - Compute a centered, aspect-preserving fit *inside the border's inner margin* (same fit-math pattern as the main content layer: whichever dimension is the tighter constraint determines the scale, centered on both axes) — this guarantees the photo never distorts or crops, just like the main page's text/photo layer.
+  - `doc.addImage()` the photo onto the new page, on top of the border. Page background is white (jsPDF's default) — no template background-color fill for these pages.
 - Photos are added in the same order as `additionalPhotos` (upload order = page order in the final PDF).
 - If `additionalPhotos` is empty, no extra pages are added — the PDF is unchanged from its current single-page output.
 
