@@ -221,6 +221,7 @@ const CreateBiodataNew: React.FC = () => {
       setReligion('');
       setFormData({});
       setPhoto(null);
+      setAdditionalPhotos([]);
       setSelectedTemplate('elegant-red');
       setSelectedSymbol('');
       setShowGaneshaIcon(true);
