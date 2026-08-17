@@ -55,6 +55,7 @@ const CreateBiodataNew: React.FC = () => {
   const [showIconPicker, setShowIconPicker] = useState<boolean>(false);
   const [formData, setFormData] = useState<BiodataForm>(savedState.formData || draft.formData || {});
   const [photo, setPhoto] = useState<File | null>(savedState.photo || null);
+  const [additionalPhotos, setAdditionalPhotos] = useState<File[]>(savedState.additionalPhotos || []);
   const [photoShape, setPhotoShape] = useState<'rectangle' | 'circle'>(savedState.photoShape || draft.photoShape || 'rectangle');
   const [selectedTemplate, setSelectedTemplate] = useState<string>(savedState.templateId || draft.selectedTemplate || 'elegant-red');
   const [selectedSymbol, setSelectedSymbol] = useState<string>(savedState.selectedSymbol || draft.selectedSymbol || '');
@@ -122,6 +123,17 @@ const CreateBiodataNew: React.FC = () => {
       });
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleAdditionalPhotosUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    const newFiles = Array.from(e.target.files);
+    setAdditionalPhotos(prev => [...prev, ...newFiles].slice(0, 5));
+    e.target.value = '';
+  };
+
+  const handleRemoveAdditionalPhoto = (index: number) => {
+    setAdditionalPhotos(prev => prev.filter((_, i) => i !== index));
   };
 
   const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
@@ -743,6 +755,51 @@ const CreateBiodataNew: React.FC = () => {
                       <span>Click to upload photo</span>
                     </div>
                   </label>
+                )}
+              </div>
+            </div>
+
+            {/* Additional Photos (Optional) */}
+            <div className="form-section-card">
+              <h2 className="section-heading">
+                <span className="section-icon">🖼️</span>
+                Additional Photos (Optional, up to 5)
+              </h2>
+              <div className="additional-photos-upload">
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleAdditionalPhotosUpload}
+                  className="photo-input"
+                  id="additional-photos-upload"
+                  disabled={additionalPhotos.length >= 5}
+                />
+                <label
+                  htmlFor="additional-photos-upload"
+                  className={`photo-upload-label ${additionalPhotos.length >= 5 ? 'photo-upload-label-disabled' : ''}`}
+                >
+                  <div className="photo-placeholder-small">
+                    <span className="photo-icon">🖼️</span>
+                    <span>{additionalPhotos.length >= 5 ? '5/5 photos added' : 'Click to add photos'}</span>
+                  </div>
+                </label>
+                {additionalPhotos.length > 0 && (
+                  <div className="additional-photos-grid">
+                    {additionalPhotos.map((file, index) => (
+                      <div key={index} className="additional-photo-thumb">
+                        <img src={URL.createObjectURL(file)} alt={`Additional ${index + 1}`} />
+                        <button
+                          type="button"
+                          className="additional-photo-remove"
+                          onClick={() => handleRemoveAdditionalPhoto(index)}
+                          aria-label={`Remove photo ${index + 1}`}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
             </div>
