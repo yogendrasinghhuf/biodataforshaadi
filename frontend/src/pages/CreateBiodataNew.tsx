@@ -764,7 +764,7 @@ const CreateBiodataNew: React.FC = () => {
             <div className="form-section-card">
               <h2 className="section-heading">
                 <span className="section-icon">🖼️</span>
-                Add More Photos (Optional, up to 5)
+                Upload More Photos (Upto 5)
               </h2>
               <div className="additional-photos-upload">
                 <input
@@ -781,8 +781,8 @@ const CreateBiodataNew: React.FC = () => {
                   className={`photo-upload-label ${additionalPhotos.length >= 5 ? 'photo-upload-label-disabled' : ''}`}
                 >
                   <div className="photo-placeholder-small">
-                    <span className="photo-icon">➕</span>
-                    <span>{additionalPhotos.length >= 5 ? '5/5 photos added' : 'Click to add photos'}</span>
+                    <span className="photo-icon">📷</span>
+                    <span>{additionalPhotos.length >= 5 ? '5/5 photos added' : 'Browse'}</span>
                   </div>
                 </label>
                 {additionalPhotos.length > 0 && (
