@@ -289,6 +289,7 @@ const CreateBiodataNew: React.FC = () => {
         formData,
         religion,
         photo,
+        additionalPhotos,
         templateId: selectedTemplate,
         customColor,
         selectedSymbol,

@@ -17,7 +17,7 @@ import './biodata-preview-shared.css';
 const Preview: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { formData, religion, photo, templateId, customColor, selectedSymbol, showGaneshaIcon = true, showShreeGanesh = true, showBiodata = true, shreeGaneshText = '|| Shree Ganeshay Namah ||', biodataText = 'BIODATA', selectedGodIcon = 'om', photoShape = 'rectangle' } = location.state || {};
+  const { formData, religion, photo, additionalPhotos = [], templateId, customColor, selectedSymbol, showGaneshaIcon = true, showShreeGanesh = true, showBiodata = true, shreeGaneshText = '|| Shree Ganeshay Namah ||', biodataText = 'BIODATA', selectedGodIcon = 'om', photoShape = 'rectangle' } = location.state || {};
 
   // const [loading, setLoading] = useState(false); // Will be used when payment is enabled
   // const [paymentSuccess, setPaymentSuccess] = useState(false); // Will be used when payment is enabled
@@ -288,6 +288,7 @@ const Preview: React.FC = () => {
         formData,
         religion,
         photo,
+        additionalPhotos,
         templateId: template?.id,
         customColor,
         selectedSymbol
