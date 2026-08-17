@@ -272,15 +272,18 @@ const Preview: React.FC = () => {
         if (extraPhotoCtx) {
           extraPhotoCtx.drawImage(extraPhotoImg, 0, 0);
 
+          // Fit within 80% of the page (not the full page) so the photo clears the border
+          // decoration's inner margin on all sides, matching the on-screen preview's inset.
+          const photoScale = 0.8;
           const photoAspect = extraPhotoImg.naturalWidth / extraPhotoImg.naturalHeight;
           const pageAspectForPhoto = pageWidthMm / pageHeightMm;
           let photoWidthMm: number;
           let photoHeightMm: number;
           if (photoAspect > pageAspectForPhoto) {
-            photoWidthMm = pageWidthMm;
+            photoWidthMm = pageWidthMm * photoScale;
             photoHeightMm = photoWidthMm / photoAspect;
           } else {
-            photoHeightMm = pageHeightMm;
+            photoHeightMm = pageHeightMm * photoScale;
             photoWidthMm = photoHeightMm * photoAspect;
           }
           const photoXOffset = (pageWidthMm - photoWidthMm) / 2;
