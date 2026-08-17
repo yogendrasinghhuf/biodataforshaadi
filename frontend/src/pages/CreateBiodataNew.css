@@ -628,6 +628,17 @@
   gap: 12px;
 }
 
+/* Smaller upload placeholder than the main profile-photo box, scoped here only —
+   .photo-placeholder-small/.photo-icon stay unchanged for the profile photo upload. */
+.additional-photos-upload .photo-placeholder-small {
+  padding: 18px 24px;
+  gap: 6px;
+}
+
+.additional-photos-upload .photo-icon {
+  font-size: 1.75rem;
+}
+
 .photo-upload-label-disabled {
   opacity: 0.5;
   cursor: not-allowed;

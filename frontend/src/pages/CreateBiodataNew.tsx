@@ -692,7 +692,7 @@ const CreateBiodataNew: React.FC = () => {
             <div className="form-section-card" ref={photoSectionRef}>
               <h2 className="section-heading">
                 <span className="section-icon">📷</span>
-                Upload Photo
+                Profile Picture
               </h2>
               <div className="photo-upload-compact">
                 <input
