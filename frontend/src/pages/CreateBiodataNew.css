@@ -622,6 +622,87 @@
   color: white;
 }
 
+.additional-photos-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Smaller, distinctly-styled upload placeholder than the main profile-photo box, scoped
+   here only — .photo-placeholder-small/.photo-icon/.photo-upload-label stay unchanged for
+   the profile photo upload. Green accent (vs. the profile photo's red) so the two sections
+   read as visually distinct while still matching the app's existing color language. */
+.additional-photos-upload .photo-upload-label {
+  border-color: var(--gray-200);
+  background: var(--gray-50);
+  border-radius: 10px;
+}
+
+.additional-photos-upload .photo-upload-label:hover {
+  border-color: var(--primary-green);
+  background: rgba(22, 163, 74, 0.04);
+}
+
+.additional-photos-upload .photo-placeholder-small {
+  padding: 16px 24px;
+  gap: 4px;
+  color: var(--gray-600);
+}
+
+.additional-photos-upload .photo-icon {
+  font-size: 1.5rem;
+}
+
+.photo-upload-label-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.additional-photos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 8px;
+}
+
+.additional-photo-thumb {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--gray-200);
+  background: var(--gray-100);
+}
+
+.additional-photo-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.additional-photo-remove {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.additional-photo-remove:hover {
+  background: rgba(220, 38, 38, 0.9);
+}
+
 /* Two shape-preview cards (rectangle + circle) with radio selection */
 .photo-shape-row {
   display: flex;
@@ -1680,6 +1761,35 @@
   pointer-events: none;
 }
 
+.mini-additional-photo-page {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 210 / 297;
+  background: #ffffff;
+  margin-top: 12px;
+  overflow: hidden;
+}
+
+.mini-additional-photo-page-border {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  object-fit: fill;
+  pointer-events: none;
+}
+
+.mini-additional-photo-page-img {
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  width: 80%;
+  height: 80%;
+  z-index: 1;
+  object-fit: contain;
+}
 
 /* Custom border overlay for preview with dynamic color */
 .preview-custom-border {

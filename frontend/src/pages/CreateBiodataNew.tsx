@@ -55,6 +55,7 @@ const CreateBiodataNew: React.FC = () => {
   const [showIconPicker, setShowIconPicker] = useState<boolean>(false);
   const [formData, setFormData] = useState<BiodataForm>(savedState.formData || draft.formData || {});
   const [photo, setPhoto] = useState<File | null>(savedState.photo || null);
+  const [additionalPhotos, setAdditionalPhotos] = useState<File[]>(savedState.additionalPhotos || []);
   const [photoShape, setPhotoShape] = useState<'rectangle' | 'circle'>(savedState.photoShape || draft.photoShape || 'rectangle');
   const [selectedTemplate, setSelectedTemplate] = useState<string>(savedState.templateId || draft.selectedTemplate || 'elegant-red');
   const [selectedSymbol, setSelectedSymbol] = useState<string>(savedState.selectedSymbol || draft.selectedSymbol || '');
@@ -122,6 +123,17 @@ const CreateBiodataNew: React.FC = () => {
       });
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleAdditionalPhotosUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    const newFiles = Array.from(e.target.files);
+    setAdditionalPhotos(prev => [...prev, ...newFiles].slice(0, 5));
+    e.target.value = '';
+  };
+
+  const handleRemoveAdditionalPhoto = (index: number) => {
+    setAdditionalPhotos(prev => prev.filter((_, i) => i !== index));
   };
 
   const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
@@ -209,6 +221,7 @@ const CreateBiodataNew: React.FC = () => {
       setReligion('');
       setFormData({});
       setPhoto(null);
+      setAdditionalPhotos([]);
       setSelectedTemplate('elegant-red');
       setSelectedSymbol('');
       setShowGaneshaIcon(true);
@@ -277,6 +290,7 @@ const CreateBiodataNew: React.FC = () => {
         formData,
         religion,
         photo,
+        additionalPhotos,
         templateId: selectedTemplate,
         customColor,
         selectedSymbol,
@@ -679,7 +693,7 @@ const CreateBiodataNew: React.FC = () => {
             <div className="form-section-card" ref={photoSectionRef}>
               <h2 className="section-heading">
                 <span className="section-icon">📷</span>
-                Upload Photo
+                Profile Picture
               </h2>
               <div className="photo-upload-compact">
                 <input
@@ -743,6 +757,51 @@ const CreateBiodataNew: React.FC = () => {
                       <span>Click to upload photo</span>
                     </div>
                   </label>
+                )}
+              </div>
+            </div>
+
+            {/* Additional Photos (Optional) */}
+            <div className="form-section-card">
+              <h2 className="section-heading">
+                <span className="section-icon">🖼️</span>
+                Upload More Photos (Upto 5)
+              </h2>
+              <div className="additional-photos-upload">
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleAdditionalPhotosUpload}
+                  className="photo-input"
+                  id="additional-photos-upload"
+                  disabled={additionalPhotos.length >= 5}
+                />
+                <label
+                  htmlFor="additional-photos-upload"
+                  className={`photo-upload-label ${additionalPhotos.length >= 5 ? 'photo-upload-label-disabled' : ''}`}
+                >
+                  <div className="photo-placeholder-small">
+                    <span className="photo-icon">📷</span>
+                    <span>{additionalPhotos.length >= 5 ? '5/5 photos added' : 'Browse'}</span>
+                  </div>
+                </label>
+                {additionalPhotos.length > 0 && (
+                  <div className="additional-photos-grid">
+                    {additionalPhotos.map((file, index) => (
+                      <div key={index} className="additional-photo-thumb">
+                        <img src={URL.createObjectURL(file)} alt={`Additional ${index + 1}`} />
+                        <button
+                          type="button"
+                          className="additional-photo-remove"
+                          onClick={() => handleRemoveAdditionalPhoto(index)}
+                          aria-label={`Remove photo ${index + 1}`}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
             </div>
@@ -992,6 +1051,23 @@ const CreateBiodataNew: React.FC = () => {
               {/* Pinned to the box's own bottom edge, matching the download page and PDF */}
               <div className="mini-preview-brand-credit" style={{ color: effectiveColor }}>biodataforshaadi.com</div>
             </div>{/* end mini-biodata-preview-mini */}
+
+            {/* Additional photo pages — plain white background, template border only, no fields */}
+            {additionalPhotos.map((file, index) => (
+              <div key={index} className="mini-additional-photo-page">
+                <img
+                  className="mini-additional-photo-page-border"
+                  src={generateBorderSVG(effectiveColor, template?.id || 'elegant-red', true).replace(/^url\("/, '').replace(/"\)$/, '')}
+                  alt=""
+                  aria-hidden="true"
+                />
+                <img
+                  className="mini-additional-photo-page-img"
+                  src={URL.createObjectURL(file)}
+                  alt={`Additional photo ${index + 1}`}
+                />
+              </div>
+            ))}
             </div>{/* end preview-scroll-wrapper */}
 
             {/* Action Buttons - Outside the preview box */}

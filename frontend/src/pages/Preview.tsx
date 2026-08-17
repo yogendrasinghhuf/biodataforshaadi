@@ -17,7 +17,7 @@ import './biodata-preview-shared.css';
 const Preview: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { formData, religion, photo, templateId, customColor, selectedSymbol, showGaneshaIcon = true, showShreeGanesh = true, showBiodata = true, shreeGaneshText = '|| Shree Ganeshay Namah ||', biodataText = 'BIODATA', selectedGodIcon = 'om', photoShape = 'rectangle' } = location.state || {};
+  const { formData, religion, photo, additionalPhotos = [], templateId, customColor, selectedSymbol, showGaneshaIcon = true, showShreeGanesh = true, showBiodata = true, shreeGaneshText = '|| Shree Ganeshay Namah ||', biodataText = 'BIODATA', selectedGodIcon = 'om', photoShape = 'rectangle' } = location.state || {};
 
   // const [loading, setLoading] = useState(false); // Will be used when payment is enabled
   // const [paymentSuccess, setPaymentSuccess] = useState(false); // Will be used when payment is enabled
@@ -223,6 +223,90 @@ const Preview: React.FC = () => {
 
     doc.addImage(imgData, 'PNG', xOffset, yOffset, imgWidthMm, imgHeightMm);
 
+    // Additional photo pages — each gets its own page: the same template border rasterized
+    // fresh (reusing the exact rasterization step used for the main page above), on a plain
+    // white background, with the photo centered inside at its own true aspect ratio so it's
+    // never distorted or cropped, matching the main page's text/photo layer.
+    for (const photoFile of additionalPhotos) {
+      doc.addPage();
+
+      // Border AND photo are both inside this one try/catch — a border-load failure must skip
+      // just this page like a photo-load failure does, not reject generatePDF() entirely and
+      // abort the whole download (that would discard the already-rendered main page and any
+      // other successfully-loaded extra photos, silently, since handleDownloadPDF has no catch).
+      let extraPhotoUrl: string | undefined;
+      try {
+        if (borderImgEl?.src) {
+          const pageBorderSourceImg = new Image();
+          await new Promise<void>((resolve, reject) => {
+            pageBorderSourceImg.onload = () => resolve();
+            pageBorderSourceImg.onerror = () => reject(new Error('border image failed to load for additional photo page'));
+            pageBorderSourceImg.src = borderImgEl.src;
+          });
+          await pageBorderSourceImg.decode();
+
+          const mmToPx = 12;
+          const pageBorderCanvas = document.createElement('canvas');
+          pageBorderCanvas.width = pageWidthMm * mmToPx;
+          pageBorderCanvas.height = pageHeightMm * mmToPx;
+          const pageBorderCtx = pageBorderCanvas.getContext('2d');
+          if (pageBorderCtx) {
+            pageBorderCtx.drawImage(pageBorderSourceImg, 0, 0, pageBorderCanvas.width, pageBorderCanvas.height);
+            doc.addImage(pageBorderCanvas.toDataURL('image/png'), 'PNG', 0, 0, pageWidthMm, pageHeightMm);
+          }
+        }
+
+        const extraPhotoImg = new Image();
+        extraPhotoUrl = URL.createObjectURL(photoFile);
+        await new Promise<void>((resolve, reject) => {
+          extraPhotoImg.onload = () => resolve();
+          extraPhotoImg.onerror = () => reject(new Error('additional photo failed to load'));
+          extraPhotoImg.src = extraPhotoUrl!;
+        });
+        await extraPhotoImg.decode();
+
+        // Drawn onto an intermediate canvas and passed to jsPDF as a data URL — matching the
+        // exact pattern already proven for the border and main content above. jsPDF's addImage
+        // expects a data URL/base64 string (not a raw Image element), and uploaded photos can be
+        // PNG/WEBP/etc, not reliably JPEG, so re-encoding via canvas.toDataURL avoids a format
+        // mismatch with the fixed 'JPEG' string a raw Image call would otherwise require.
+        const extraPhotoCanvas = document.createElement('canvas');
+        extraPhotoCanvas.width = extraPhotoImg.naturalWidth;
+        extraPhotoCanvas.height = extraPhotoImg.naturalHeight;
+        const extraPhotoCtx = extraPhotoCanvas.getContext('2d');
+        if (extraPhotoCtx) {
+          extraPhotoCtx.drawImage(extraPhotoImg, 0, 0);
+
+          // Fit within 80% of the page (not the full page) so the photo clears the border
+          // decoration's inner margin on all sides, matching the on-screen preview's inset.
+          const photoScale = 0.8;
+          const photoAspect = extraPhotoImg.naturalWidth / extraPhotoImg.naturalHeight;
+          const pageAspectForPhoto = pageWidthMm / pageHeightMm;
+          let photoWidthMm: number;
+          let photoHeightMm: number;
+          if (photoAspect > pageAspectForPhoto) {
+            photoWidthMm = pageWidthMm * photoScale;
+            photoHeightMm = photoWidthMm / photoAspect;
+          } else {
+            photoHeightMm = pageHeightMm * photoScale;
+            photoWidthMm = photoHeightMm * photoAspect;
+          }
+          const photoXOffset = (pageWidthMm - photoWidthMm) / 2;
+          const photoYOffset = (pageHeightMm - photoHeightMm) / 2;
+
+          doc.addImage(extraPhotoCanvas.toDataURL('image/png'), 'PNG', photoXOffset, photoYOffset, photoWidthMm, photoHeightMm);
+        }
+      } catch (error) {
+        console.error('Skipping an additional photo page:', error);
+      } finally {
+        // Runs whether the photo loaded successfully or not, so a failed load never leaks the
+        // blob URL — previously this was only revoked on the success path.
+        if (extraPhotoUrl) {
+          URL.revokeObjectURL(extraPhotoUrl);
+        }
+      }
+    }
+
     return doc;
   };
 
@@ -288,6 +372,7 @@ const Preview: React.FC = () => {
         formData,
         religion,
         photo,
+        additionalPhotos,
         templateId: template?.id,
         customColor,
         selectedSymbol
@@ -510,6 +595,23 @@ const Preview: React.FC = () => {
             {/* Pinned to the box's own bottom edge (not the flowing content), matching the PDF's placement above the template's border */}
             <div className="preview-brand-credit" style={{ color: effectiveColor }}>biodataforshaadi.com</div>
           </div> {/* biodata-preview-mini */}
+
+          {/* Additional photo pages — plain white background, template border only, no fields */}
+          {additionalPhotos.map((file: File, index: number) => (
+            <div key={index} className="additional-photo-page">
+              <img
+                className="additional-photo-page-border"
+                src={generateBorderSVG(effectiveColor, template?.id || 'elegant-red').replace(/^url\("/, '').replace(/"\)$/, '')}
+                alt=""
+                aria-hidden="true"
+              />
+              <img
+                className="additional-photo-page-img"
+                src={URL.createObjectURL(file)}
+                alt={`Additional photo ${index + 1}`}
+              />
+            </div>
+          ))}
           </div> {/* preview-scroll-wrapper */}
 
           {/* Order Summary Card */}

@@ -220,6 +220,35 @@
   pointer-events: none;
 }
 
+.preview-layout .additional-photo-page {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 210 / 297;
+  background: #ffffff;
+  margin-top: 16px;
+  overflow: hidden;
+}
+
+.preview-layout .additional-photo-page-border {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  object-fit: fill;
+  pointer-events: none;
+}
+
+.preview-layout .additional-photo-page-img {
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  width: 80%;
+  height: 80%;
+  z-index: 1;
+  object-fit: contain;
+}
 
 /* Payment Card */
 .payment-card {
