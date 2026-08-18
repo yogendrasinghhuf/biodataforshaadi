@@ -2,10 +2,9 @@ import React, { useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 // import axios from 'axios'; // Will be used when payment is enabled
 import { getTemplateById, getOriginalPrice } from '../data/templates';
-import { getIconSvg } from '../data/godIcons';
-import { generateBorderSVG } from '../data/borderPatterns';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
+import BiodataPage from '../components/BiodataPage';
 import './Preview.css';
 import './biodata-preview-shared.css';
 
@@ -369,217 +368,23 @@ const Preview: React.FC = () => {
         <div className="preview-layout">
           {/* Biodata Preview - identical structure to mini preview in CreateBiodataNew */}
           <div className="preview-scroll-wrapper">
-          <div
-            ref={previewRef}
-            className={`biodata-preview-mini mehndi-border border-template-${template?.id || 'elegant-red'} ${!showShreeGanesh ? 'hide-shree-ganesh' : ''} ${!showBiodata ? 'hide-biodata' : ''} ${photo ? 'has-photo' : ''}`}
-            style={{
-              position: 'relative',
-              overflow: 'hidden',
-              backgroundColor: template?.colors.background,
-              ['--border-color' as any]: effectiveColor,
-              ['--border-image' as any]: generateBorderSVG(effectiveColor, template?.id || 'elegant-red'),
-              ['--shree-ganesh-text' as any]: `"${shreeGaneshText}"`,
-              ['--biodata-text' as any]: `"${biodataText}"`,
-            }}
-          >
-            <img
-              className="preview-border-img"
-              src={generateBorderSVG(effectiveColor, template?.id || 'elegant-red').replace(/^url\("/, '').replace(/"\)$/, '')}
-              alt=""
-              aria-hidden="true"
-            />
-            <div className="preview-inner-scroll">
-            <div className="preview-mini-content-wrap">
-{/* God Icon at top center */}
-              {showGaneshaIcon && selectedGodIcon && (
-                <div
-                  className="ganesha-icon-header"
-                  dangerouslySetInnerHTML={{ __html: getIconSvg(selectedGodIcon) }}
-                />
-              )}
-
-              {/* Religious symbol as watermark - randomly placed at 4 locations */}
-              {selectedSymbol && (
-                <div className="symbol-watermark" style={{ color: effectiveColor }}>
-                  <span>{selectedSymbol}</span>
-                  <span>{selectedSymbol}</span>
-                  <span>{selectedSymbol}</span>
-                  <span>{selectedSymbol}</span>
-                </div>
-              )}
-
-              {/* Photo in top right corner */}
-              {photo && (
-                <div className={`preview-photo-corner photo-shape-${photoShape}`} style={{ borderColor: effectiveColor }}>
-                  <img src={URL.createObjectURL(photo)} alt="Profile" />
-                </div>
-              )}
-
-              {/* Content Preview */}
-              <div className="preview-mini-content">
-
-                {/* If Shree Ganesh toggle is ON - show text with icons on both sides */}
-                {showShreeGanesh && (
-                  <div className="shree-ganesh-header">
-                    {showGaneshaIcon && (
-                      <span
-                        className="header-icon-left"
-                        dangerouslySetInnerHTML={{ __html: getIconSvg(selectedGodIcon) }}
-                      />
-                    )}
-                    <span className="shree-ganesh-text">{shreeGaneshText}</span>
-                    {showGaneshaIcon && (
-                      <span
-                        className="header-icon-right"
-                        dangerouslySetInnerHTML={{ __html: getIconSvg(selectedGodIcon) }}
-                      />
-                    )}
-                  </div>
-                )}
-
-                {/* If Shree Ganesh toggle is OFF but icon toggle is ON - show icon alone at center */}
-                {!showShreeGanesh && showGaneshaIcon && (
-                  <div className="icon-only-header">
-                    <span
-                      className="icon-center"
-                      dangerouslySetInnerHTML={{ __html: getIconSvg(selectedGodIcon) }}
-                    />
-                  </div>
-                )}
-
-                {/* BIO DATA text below Shree Ganesh */}
-                {showBiodata && (
-                  <div className="biodata-header">
-                    {biodataText}
-                  </div>
-                )}
-
-                {/* Name at the top as title */}
-                {formData.fullName && (
-                  <h2 className="preview-name-title">
-                    {formData.fullName}
-                  </h2>
-                )}
-
-                {/* Wraps Personal Details + Religion Details so a min-height (applied via CSS
-                    when a photo exists) can push Family Information and everything after it
-                    below the photo, instead of letting a short Personal Details section leave
-                    a later section's full-width label/divider running behind the photo. */}
-                <div className="preview-fields-before-photo-clear">
-                {/* Personal Information */}
-                {(formData.dateOfBirth || formData.timeOfBirth || formData.placeOfBirth || formData.height || formData.weight || formData.complexion || formData.bloodGroup || formData.maritalStatus || formData.education || formData.college || formData.occupation || formData.company || formData.annualIncome || formData.workLocation) && (
-                  <div className="preview-section-label" style={{ color: effectiveColor }}>Personal Details</div>
-                )}
-                {formData.dateOfBirth && <div className="preview-field"><strong>Date of Birth:</strong><span>{formData.dateOfBirth}</span></div>}
-                {formData.timeOfBirth && <div className="preview-field"><strong>Time of Birth:</strong><span>{formData.timeOfBirth}</span></div>}
-                {formData.placeOfBirth && <div className="preview-field"><strong>Place of Birth:</strong><span>{formData.placeOfBirth}</span></div>}
-                {formData.height && <div className="preview-field"><strong>Height:</strong><span>{formData.height}</span></div>}
-                {formData.weight && <div className="preview-field"><strong>Weight:</strong><span>{formData.weight}</span></div>}
-                {formData.complexion && <div className="preview-field"><strong>Complexion:</strong><span>{formData.complexion}</span></div>}
-                {formData.bloodGroup && <div className="preview-field"><strong>Blood Group:</strong><span>{formData.bloodGroup}</span></div>}
-                {formData.maritalStatus && <div className="preview-field"><strong>Marital Status:</strong><span>{formData.maritalStatus}</span></div>}
-
-                {/* Education & Career */}
-                {formData.education && <div className="preview-field"><strong>Education:</strong><span>{formData.education}</span></div>}
-                {formData.college && <div className="preview-field"><strong>College/University:</strong><span>{formData.college}</span></div>}
-                {formData.occupation && <div className="preview-field"><strong>Occupation:</strong><span>{formData.occupation}</span></div>}
-                {formData.company && <div className="preview-field"><strong>Company:</strong><span>{formData.company}</span></div>}
-                {formData.annualIncome && <div className="preview-field"><strong>Annual Income:</strong><span>{formData.annualIncome}</span></div>}
-                {formData.workLocation && <div className="preview-field"><strong>Work Location:</strong><span>{formData.workLocation}</span></div>}
-
-                {/* Religion Details */}
-                {(formData.caste || formData.subCaste || formData.gotra || formData.rashi || formData.nakshatra || formData.manglik || formData.deity || formData.sect || formData.community || formData.maslak || formData.namazPractice || formData.hijab || formData.arabicName || formData.denomination || formData.churchAffiliation || formData.baptized || formData.sundayService || formData.jatha || formData.amritdhari || formData.keshdhari || formData.gurudwaraVisit) && (
-                  <div className="preview-section-label" style={{ color: effectiveColor }}>Religion Details</div>
-                )}
-                {formData.caste && <div className="preview-field"><strong>Caste:</strong><span>{formData.caste}</span></div>}
-                {formData.subCaste && <div className="preview-field"><strong>Sub-Caste:</strong><span>{formData.subCaste}</span></div>}
-                {formData.gotra && <div className="preview-field"><strong>Gotra:</strong><span>{formData.gotra}</span></div>}
-                {formData.rashi && <div className="preview-field"><strong>Rashi:</strong><span>{formData.rashi}</span></div>}
-                {formData.nakshatra && <div className="preview-field"><strong>Nakshatra:</strong><span>{formData.nakshatra}</span></div>}
-                {formData.manglik && <div className="preview-field"><strong>Manglik:</strong><span>{formData.manglik}</span></div>}
-                {formData.deity && <div className="preview-field"><strong>Kul Devta/Devi:</strong><span>{formData.deity}</span></div>}
-                {formData.sect && <div className="preview-field"><strong>Sect:</strong><span>{formData.sect}</span></div>}
-                {formData.community && <div className="preview-field"><strong>Community:</strong><span>{formData.community}</span></div>}
-                {formData.maslak && <div className="preview-field"><strong>Maslak:</strong><span>{formData.maslak}</span></div>}
-                {formData.namazPractice && <div className="preview-field"><strong>Namaz Practice:</strong><span>{formData.namazPractice}</span></div>}
-                {formData.hijab && <div className="preview-field"><strong>Hijab/Purdah:</strong><span>{formData.hijab}</span></div>}
-                {formData.arabicName && <div className="preview-field"><strong>Arabic Name:</strong><span>{formData.arabicName}</span></div>}
-                {formData.denomination && <div className="preview-field"><strong>Denomination:</strong><span>{formData.denomination}</span></div>}
-                {formData.churchAffiliation && <div className="preview-field"><strong>Church:</strong><span>{formData.churchAffiliation}</span></div>}
-                {formData.baptized && <div className="preview-field"><strong>Baptized:</strong><span>{formData.baptized}</span></div>}
-                {formData.sundayService && <div className="preview-field"><strong>Church Attendance:</strong><span>{formData.sundayService}</span></div>}
-                {formData.jatha && <div className="preview-field"><strong>Jatha:</strong><span>{formData.jatha}</span></div>}
-                {formData.amritdhari && <div className="preview-field"><strong>Amritdhari:</strong><span>{formData.amritdhari}</span></div>}
-                {formData.keshdhari && <div className="preview-field"><strong>Keshdhari:</strong><span>{formData.keshdhari}</span></div>}
-                {formData.gurudwaraVisit && <div className="preview-field"><strong>Gurudwara Visit:</strong><span>{formData.gurudwaraVisit}</span></div>}
-                </div>
-
-                {/* Family Details */}
-                {(formData.fatherName || formData.fatherOccupation || formData.motherName || formData.motherOccupation || formData.siblings || formData.siblingsMarried || formData.familyType || formData.familyValues || formData.familyIncome || formData.nativePlace || formData.currentAddress) && (
-                  <div className="preview-section-label" style={{ color: effectiveColor }}>Family Information</div>
-                )}
-                {formData.fatherName && <div className="preview-field"><strong>Father's Name:</strong><span>{formData.fatherName}</span></div>}
-                {formData.fatherOccupation && <div className="preview-field"><strong>Father's Occupation:</strong><span>{formData.fatherOccupation}</span></div>}
-                {formData.motherName && <div className="preview-field"><strong>Mother's Name:</strong><span>{formData.motherName}</span></div>}
-                {formData.motherOccupation && <div className="preview-field"><strong>Mother's Occupation:</strong><span>{formData.motherOccupation}</span></div>}
-                {formData.siblings && <div className="preview-field"><strong>Siblings:</strong><span>{formData.siblings}</span></div>}
-                {formData.siblingsMarried && <div className="preview-field"><strong>Siblings Married:</strong><span>{formData.siblingsMarried}</span></div>}
-                {formData.familyType && <div className="preview-field"><strong>Family Type:</strong><span>{formData.familyType}</span></div>}
-                {formData.familyValues && <div className="preview-field"><strong>Family Values:</strong><span>{formData.familyValues}</span></div>}
-                {formData.familyIncome && <div className="preview-field"><strong>Family Income:</strong><span>{formData.familyIncome}</span></div>}
-                {formData.nativePlace && <div className="preview-field"><strong>Native Place:</strong><span>{formData.nativePlace}</span></div>}
-                {formData.currentAddress && <div className="preview-field"><strong>Current Address:</strong><span>{formData.currentAddress}</span></div>}
-
-                {/* Contact Information */}
-                {(formData.phone || formData.email || formData.whatsapp || formData.address) && (
-                  <div className="preview-section-label" style={{ color: effectiveColor }}>Contact Information</div>
-                )}
-                {formData.phone && <div className="preview-field"><strong>Phone:</strong><span>{formData.phone}</span></div>}
-                {formData.email && <div className="preview-field"><strong>Email:</strong><span>{formData.email}</span></div>}
-                {formData.whatsapp && <div className="preview-field"><strong>Alternate No:</strong><span>{formData.whatsapp}</span></div>}
-                {formData.address && <div className="preview-field"><strong>Address:</strong><span>{formData.address}</span></div>}
-
-                {/* Partner Preferences */}
-                {(formData.partnerAgeRange || formData.partnerHeight || formData.partnerEducation || formData.partnerOccupation || formData.partnerLocation || formData.otherPreferences) && (
-                  <div className="preview-section-label" style={{ color: effectiveColor }}>Partner Preferences</div>
-                )}
-                {formData.partnerAgeRange && <div className="preview-field"><strong>Partner Age Range:</strong><span>{formData.partnerAgeRange}</span></div>}
-                {formData.partnerHeight && <div className="preview-field"><strong>Partner Height:</strong><span>{formData.partnerHeight}</span></div>}
-                {formData.partnerEducation && <div className="preview-field"><strong>Partner Education:</strong><span>{formData.partnerEducation}</span></div>}
-                {formData.partnerOccupation && <div className="preview-field"><strong>Partner Occupation:</strong><span>{formData.partnerOccupation}</span></div>}
-                {formData.partnerLocation && <div className="preview-field"><strong>Partner Location:</strong><span>{formData.partnerLocation}</span></div>}
-                {formData.otherPreferences && <div className="preview-field"><strong>Other Preferences:</strong><span>{formData.otherPreferences}</span></div>}
-
-                {/* Empty state */}
-                {Object.keys(formData).length === 0 && !photo && (
-                  <div className="preview-empty">
-                    <p>Start filling the form to see your biodata preview here</p>
-                  </div>
-                )}
-              </div>
-            </div> {/* preview-mini-content-wrap */}
-            </div> {/* preview-inner-scroll */}
-
-            {/* Pinned to the box's own bottom edge (not the flowing content), matching the PDF's placement above the template's border */}
-            <div className="preview-brand-credit" style={{ color: effectiveColor }}>biodataforshaadi.com</div>
-          </div> {/* biodata-preview-mini */}
-
-          {/* Additional photo pages — plain white background, template border only, no fields */}
-          {additionalPhotos.map((file: File, index: number) => (
-            <div key={index} className="additional-photo-page">
-              <img
-                className="additional-photo-page-border"
-                src={generateBorderSVG(effectiveColor, template?.id || 'elegant-red').replace(/^url\("/, '').replace(/"\)$/, '')}
-                alt=""
-                aria-hidden="true"
-              />
-              <img
-                className="additional-photo-page-img"
-                src={URL.createObjectURL(file)}
-                alt={`Additional photo ${index + 1}`}
-              />
-            </div>
-          ))}
+          <BiodataPage
+            innerRef={previewRef}
+            formData={formData}
+            templateId={template?.id || 'elegant-red'}
+            templateBackground={template?.colors.background}
+            effectiveColor={effectiveColor}
+            photo={photo}
+            photoShape={photoShape}
+            selectedSymbol={selectedSymbol}
+            showGaneshaIcon={showGaneshaIcon}
+            showShreeGanesh={showShreeGanesh}
+            showBiodata={showBiodata}
+            shreeGaneshText={shreeGaneshText}
+            biodataText={biodataText}
+            selectedGodIcon={selectedGodIcon}
+            additionalPhotos={additionalPhotos}
+          />
           </div> {/* preview-scroll-wrapper */}
 
           {/* Order Summary Card */}
