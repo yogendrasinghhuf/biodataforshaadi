@@ -528,6 +528,7 @@ const CreateBiodataNew: React.FC = () => {
                         onChange={(e) => setShreeGaneshText(e.target.value)}
                         onBlur={() => setEditingShreeGanesh(false)}
                         placeholder="|| Shree Ganesh ||"
+                        maxLength={50}
                         autoFocus
                       />
                     ) : (
@@ -560,6 +561,7 @@ const CreateBiodataNew: React.FC = () => {
                         onChange={(e) => setBiodataText(e.target.value)}
                         onBlur={() => setEditingBiodata(false)}
                         placeholder="BIO DATA"
+                        maxLength={50}
                         autoFocus
                       />
                     ) : (

@@ -58,12 +58,14 @@ const Preview: React.FC = () => {
     const photoImgEl = photoContainerEl?.querySelector('img');
     const borderImgEl = containerEl.querySelector<HTMLImageElement>('.preview-border-img');
 
-    // PDF-only spacing tweak: the gap above "Shree Ganesh" is reduced by this many px, applied
-    // ONLY to html2canvas's offscreen clone (never the live containerEl, so the on-screen preview
-    // is untouched). The photo is drawn afterward using the LIVE element's coordinates, so its
-    // destY is shifted up by this same amount to stay in sync with the shifted content —
-    // otherwise the two drift apart exactly like the earlier bug this fixes replaced.
-    const pdfTopSpacingReductionPx = 10;
+    // PDF-only spacing tweak: adds clearance above "Shree Ganesh" so it never touches the top
+    // border. The content layer is now always fit to the page by width and anchored to the top
+    // (see imgWidthMm/yOffset below), so this offset lands at the same fixed spot on every PDF
+    // regardless of how much the form is filled in. Applied ONLY to html2canvas's offscreen clone
+    // (never the live containerEl, so the on-screen preview is untouched). The photo is drawn
+    // afterward using the LIVE element's coordinates, so its destY is shifted down by this same
+    // amount to stay in sync with the shifted content — otherwise the two drift apart.
+    const pdfTopSpacingAdditionPx = 20;
 
     const canvas = await html2canvas(containerEl, {
       scale: 3,
@@ -84,7 +86,15 @@ const Preview: React.FC = () => {
         const clonedContentWrap = clonedDoc.querySelector<HTMLElement>('.preview-mini-content-wrap');
         if (clonedContentWrap) {
           const currentPaddingTop = parseFloat(getComputedStyle(clonedContentWrap).paddingTop) || 0;
-          clonedContentWrap.style.setProperty('padding-top', `${Math.max(0, currentPaddingTop - pdfTopSpacingReductionPx)}px`);
+          clonedContentWrap.style.setProperty('padding-top', `${currentPaddingTop + pdfTopSpacingAdditionPx}px`);
+        }
+        // The top padding above pushed all content down, eating into the credit line's bottom
+        // clearance (it's pinned via `bottom: 26px` within the same captured box). Push it up by
+        // the same amount so it keeps clearing the bottom border.
+        const clonedBrandCredit = clonedDoc.querySelector<HTMLElement>('.preview-brand-credit');
+        if (clonedBrandCredit) {
+          const currentBottom = parseFloat(getComputedStyle(clonedBrandCredit).bottom) || 0;
+          clonedBrandCredit.style.setProperty('bottom', `${currentBottom + pdfTopSpacingAdditionPx}px`);
         }
       }
     });
@@ -104,9 +114,9 @@ const Preview: React.FC = () => {
       const canvasScaleX = canvas.width / containerRect.width;
       const canvasScaleY = canvas.height / containerRect.height;
       const destX = (photoRect.left - containerRect.left) * canvasScaleX;
-      // Shifted up by the same PDF-only spacing reduction applied to the clone's padding-top,
-      // so the photo stays aligned with the content that moved up with it instead of drifting.
-      const destY = (photoRect.top - containerRect.top - pdfTopSpacingReductionPx) * canvasScaleY;
+      // Shifted down by the same PDF-only spacing addition applied to the clone's padding-top,
+      // so the photo stays aligned with the content that moved down with it instead of drifting.
+      const destY = (photoRect.top - containerRect.top + pdfTopSpacingAdditionPx) * canvasScaleY;
       const destW = photoRect.width * canvasScaleX;
       const destH = photoRect.height * canvasScaleY;
 
@@ -204,22 +214,18 @@ const Preview: React.FC = () => {
       }
     }
 
-    // Text/photo content layer, kept at its natural aspect ratio and centered so nothing is
-    // ever distorted or cropped — this never changes regardless of how much content is filled in.
+    // Text/photo content layer, always fit to the page's full width and anchored to the top
+    // edge — the same ratio a fully-filled form gets. This keeps Shree Ganesh/BIO DATA/the
+    // biodataforshaadi.com credit line at the exact same spot on every PDF, regardless of how
+    // much the form is filled in. The content wrap has no max-height (it's an ever-growing
+    // scrollable box on screen), so unusually long content (e.g. a very long address) may run
+    // past the bottom border edge rather than shrinking — an accepted rare-case tradeoff for
+    // keeping the header/credit position stable in the common case.
     const artworkAspect = canvas.width / canvas.height;
-    const pageAspect = pageWidthMm / pageHeightMm;
-
-    let imgWidthMm: number;
-    let imgHeightMm: number;
-    if (artworkAspect > pageAspect) {
-      imgWidthMm = pageWidthMm;
-      imgHeightMm = imgWidthMm / artworkAspect;
-    } else {
-      imgHeightMm = pageHeightMm;
-      imgWidthMm = imgHeightMm * artworkAspect;
-    }
-    const xOffset = (pageWidthMm - imgWidthMm) / 2;
-    const yOffset = (pageHeightMm - imgHeightMm) / 2;
+    const imgWidthMm = pageWidthMm;
+    const imgHeightMm = imgWidthMm / artworkAspect;
+    const xOffset = 0;
+    const yOffset = 0;
 
     doc.addImage(imgData, 'PNG', xOffset, yOffset, imgWidthMm, imgHeightMm);
 

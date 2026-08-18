@@ -30,6 +30,11 @@ const Home: React.FC = () => {
       icon: '⚡',
       title: 'Lightning Fast',
       description: 'Create and download your biodata in minutes, not hours'
+    },
+    {
+      icon: '🖼️',
+      title: 'Additional Photo Feature',
+      description: 'Include additional photos alongside your profile picture, all in one biodata'
     }
   ];
 
