@@ -1,0 +1,5 @@
+/* BiodataPage-specific overrides go here if ever needed.
+   All layout/typography rules for this component currently live in
+   frontend/src/pages/biodata-preview-shared.css, imported by both
+   CreateBiodataNew.tsx and Preview.tsx. Do not duplicate rules from
+   there into this file. */
