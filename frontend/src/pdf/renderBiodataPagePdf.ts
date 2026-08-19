@@ -469,16 +469,25 @@ export async function renderBiodataPagePdf(doc: jsPDF, input: BiodataPdfInput): 
 
     // Sections 0-1 (Personal + Religion) sit beside the photo and must dodge it
     // horizontally, mirroring .has-photo .preview-fields-before-photo-clear.
-    // Once content flows onto a continuation page the photo is no longer there,
-    // so the dodge and the clear-below only apply while still on page 1.
-    const onFirstPage = doc.getNumberOfPages() === 1;
-    const besidePhoto = photoBottomY > 0 && sectionIndex < 2 && onFirstPage;
-    const rowWidth = besidePhoto ? fullRowWidth - PHOTO_FIELD_DODGE_MM : fullRowWidth;
-    const valueWidth = rowWidth - LABEL_COL_WIDTH_MM;
+    //
+    // This has to be evaluated per ROW, not once per section: a page break can
+    // land in the middle of a section (Personal + Religion together can exceed
+    // one page), and the photo only exists on page 1. Caching it at section
+    // start left continuation-page rows narrowed to the dodged width with no
+    // photo beside them, wrapping text that had the full width available.
+    const availableValueWidth = (): number => {
+      const dodging =
+        photoBottomY > 0 &&
+        sectionIndex < 2 &&
+        doc.getNumberOfPages() === 1 &&
+        cursorY < photoBottomY;
+      const rowWidth = dodging ? fullRowWidth - PHOTO_FIELD_DODGE_MM : fullRowWidth;
+      return rowWidth - LABEL_COL_WIDTH_MM;
+    };
 
     // Family Information onward starts below the photo, matching the
     // min-height: 210px clear on the first-two-sections wrapper.
-    if (photoBottomY > 0 && sectionIndex === 2 && onFirstPage) {
+    if (photoBottomY > 0 && sectionIndex === 2 && doc.getNumberOfPages() === 1) {
       const clearY = Math.max(photoBottomY, CONTENT_TOP_MM + PHOTO_CLEAR_MIN_HEIGHT_MM);
       cursorY = Math.max(cursorY, clearY);
     }
@@ -494,18 +503,31 @@ export async function renderBiodataPagePdf(doc: jsPDF, input: BiodataPdfInput): 
     // .preview-section-label: uppercase, letter-spacing 0.1em, flanked by rules.
     const labelText = section.title.toUpperCase();
     const labelCharSpace = 0.1 * (SECTION_LABEL_PT / 72) * 25.4;
-    doc.text(labelText, fieldStartX + SECTION_LABEL_INSET_MM, cursorY, { charSpace: labelCharSpace });
 
-    // The ::before/::after hairlines either side of the label text.
+    // The ::before/::after hairlines flanking the label text. The CSS makes the
+    // label a flex row with a `flex: 1` pseudo-element on EACH side and a 6px
+    // gap, so the two rules share the leftover width equally and the title ends
+    // up centred between them — not left-aligned with a single trailing rule,
+    // which is what this used to draw.
     const labelWidth = doc.getTextWidth(labelText) + labelCharSpace * labelText.length;
     const ruleY = cursorY - SECTION_LABEL_PT * 0.35 * (25.4 / 72);
     const ruleGap = 6 * PX_TO_MM;
-    const ruleRightStart = fieldStartX + SECTION_LABEL_INSET_MM + labelWidth + ruleGap;
-    const ruleRightEnd = fieldStartX + fullRowWidth - SECTION_LABEL_INSET_MM;
+    const rowLeft = fieldStartX + SECTION_LABEL_INSET_MM;
+    const rowRight = fieldStartX + fullRowWidth - SECTION_LABEL_INSET_MM;
+    const labelStartX = (rowLeft + rowRight) / 2 - labelWidth / 2;
+    doc.text(labelText, labelStartX, cursorY, { charSpace: labelCharSpace });
+
     doc.setDrawColor(colors.sectionLabel);
     doc.setLineWidth(0.2);
-    if (ruleRightEnd > ruleRightStart) {
-      doc.line(ruleRightStart, ruleY, ruleRightEnd, ruleY);
+
+    const ruleLeftEnd = labelStartX - ruleGap;
+    if (ruleLeftEnd > rowLeft) {
+      doc.line(rowLeft, ruleY, ruleLeftEnd, ruleY);
+    }
+
+    const ruleRightStart = labelStartX + labelWidth + ruleGap;
+    if (rowRight > ruleRightStart) {
+      doc.line(ruleRightStart, ruleY, rowRight, ruleY);
     }
     cursorY += SECTION_LABEL_ADVANCE_MM;
 
@@ -515,10 +537,23 @@ export async function renderBiodataPagePdf(doc: jsPDF, input: BiodataPdfInput): 
 
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(FIELD_PT);
-      const valueLines: string[] = doc.splitTextToSize(value, Math.max(valueWidth, 20));
+
+      // Measure at the width available where the row currently sits, decide
+      // whether it fits, then re-measure if the break changed the width (moving
+      // to page 2 drops the photo dodge and widens the value column).
+      const widthBeforeBreak = availableValueWidth();
+      let valueLines: string[] = doc.splitTextToSize(value, Math.max(widthBeforeBreak, 20));
+      const brokeToNewPage = await breakPageIfNeeded(
+        LINE_HEIGHT_MM + WRAP_LINE_HEIGHT_MM * Math.max(0, valueLines.length - 1)
+      );
+      if (brokeToNewPage) {
+        const widthAfterBreak = availableValueWidth();
+        if (widthAfterBreak !== widthBeforeBreak) {
+          valueLines = doc.splitTextToSize(value, Math.max(widthAfterBreak, 20));
+        }
+      }
       const rowHeight =
         LINE_HEIGHT_MM + WRAP_LINE_HEIGHT_MM * Math.max(0, valueLines.length - 1);
-      await breakPageIfNeeded(rowHeight);
 
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(FIELD_PT);
