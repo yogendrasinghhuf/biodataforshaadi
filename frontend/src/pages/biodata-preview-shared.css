@@ -472,6 +472,20 @@
    the old mini-* rules verbatim (see task-6a-report.md for the full mapping);
    do not "simplify" these back toward the unscoped values above — the box sizes
    are genuinely different (mini ≈360px wide vs download-page ≈650px wide).
+
+   SPECIFICITY NOTE: several rules below target a class (`.preview-name-title`,
+   `.preview-field`, `.shree-ganesh-text`, `.biodata-header`, `.header-icon-left`/
+   `-right`) that the dark-template block above (search "Dark Royal Templates —
+   gold typography") ALSO targets via a plain `.border-template-X .<class>`
+   selector — both at two-class specificity (0,2,0) if this file only wrote
+   `.preview-section .<class>` here. Those rules are therefore deliberately
+   written as `.preview-section .biodata-preview-mini .<class>` (0,3,0) instead,
+   so they win on specificity and stay correct regardless of source order — do
+   not "clean up" that extra `.biodata-preview-mini` step back down to just
+   `.preview-section .<class>`; it is load-bearing, not redundant. Rules in this
+   block that don't share a target class with the dark-template block (e.g.
+   `.preview-inner-scroll`, `.additional-photo-page`, `.preview-photo-corner`)
+   don't need the extra qualifier and are left as plain `.preview-section .<class>`.
    ======================================== */
 
 /* Base box: mini box additionally needs flex layout (for its scrollable inner
@@ -578,8 +592,14 @@
   height: 80px;
 }
 
-/* ── Name title — smaller font/padding at mini scale. ── */
-.preview-section .preview-name-title {
+/* ── Name title — smaller font/padding at mini scale.
+   Selector deliberately goes through `.biodata-preview-mini` (not just `.preview-section`) to
+   raise specificity to 0,3,0 — strictly higher than the dark-template overrides above
+   (`.border-template-X .preview-name-title`, 0,2,0), so this wins by specificity, not by
+   coming later in the file. Without the extra class step, both rules sit at 0,2,0 and the
+   correct result would depend entirely on source order — see the block comment above this
+   section for the full rationale. ── */
+.preview-section .biodata-preview-mini .preview-name-title {
   font-size: 0.75rem;
   margin: 0 0 2px 0;
   padding: 4px 12px 2px;
@@ -600,7 +620,11 @@
   font-size: 7px;
 }
 
-.preview-section .preview-field {
+/* Goes through `.biodata-preview-mini` for the same specificity-hardening reason as
+   `.preview-name-title` above (0,3,0 vs the dark-template `.border-template-X .preview-field`
+   rule's 0,2,0) — this one sets `color` on the same element the dark templates recolor, so an
+   equal-specificity tie here would be a real (not just theoretical) risk. */
+.preview-section .biodata-preview-mini .preview-field {
   padding: 2px 4px;
   font-size: 7px;
 }
@@ -634,11 +658,13 @@
   gap: 12px;
 }
 
-.preview-section .shree-ganesh-text {
+/* `.biodata-preview-mini`-qualified for the same reason as `.preview-name-title`/`.preview-field`
+   above — this class is also recolored by the dark-template block at equal (0,2,0) specificity. */
+.preview-section .biodata-preview-mini .shree-ganesh-text {
   font-size: 0.65rem;
 }
 
-.preview-section .biodata-header {
+.preview-section .biodata-preview-mini .biodata-header {
   font-size: 0.62rem;
   padding: 0 16px 4px;
 }
@@ -647,9 +673,12 @@
   padding: 4px 16px 2px;
 }
 
+/* `.header-icon-left`/`.header-icon-right` are `.biodata-preview-mini`-qualified (unlike
+   `.icon-center`, which no dark-template rule touches) because the dark-template block also
+   recolors them at equal (0,2,0) specificity — same hardening as above. */
 .preview-section .icon-center,
-.preview-section .header-icon-left,
-.preview-section .header-icon-right {
+.preview-section .biodata-preview-mini .header-icon-left,
+.preview-section .biodata-preview-mini .header-icon-right {
   width: 18px;
   height: 18px;
 }
