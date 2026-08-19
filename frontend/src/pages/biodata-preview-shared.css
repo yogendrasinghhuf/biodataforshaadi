@@ -509,15 +509,58 @@
   border-radius: 0;
 }
 
-/* Brand credit line sits closer to the bottom edge at mini scale. */
+/* Brand credit line — self-contained (not just the differing `bottom`/`font-size`), because
+   the base positioning for this class lives in Preview.css's OWN unscoped `.preview-brand-credit`
+   rule, which CreateBiodataNew.tsx does not import (Preview.css is Preview.tsx's page-specific
+   stylesheet, not a shared one) — so this scoped rule cannot rely on inheriting from it. Sits
+   closer to the bottom edge at mini scale (`bottom: 12px` vs Preview.css's `26px`); font-size is
+   the same 0.75rem in both, included here for completeness/self-containment. */
 .preview-section .preview-brand-credit {
+  position: absolute;
+  left: 0;
+  right: 0;
   bottom: 12px;
+  z-index: 11;
+  text-align: center;
   font-size: 0.75rem;
+  font-weight: 600;
+  opacity: 0.85;
+  pointer-events: none;
 }
 
-/* Additional photo pages — smaller top margin at mini scale. */
+/* Additional photo pages — self-contained for the same reason as brand-credit above: the base
+   properties live in Preview.css's `.preview-layout .additional-photo-page` (and its `-border`/
+   `-img` children), unreachable from CreateBiodataNew.tsx. Only `margin-top` differs at mini
+   scale (12px vs Preview.css's 16px); everything else is identical, included here so the element
+   is fully positioned/sized using only biodata-preview-shared.css. */
 .preview-section .additional-photo-page {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 210 / 297;
+  background: #ffffff;
   margin-top: 12px;
+  overflow: hidden;
+}
+
+.preview-section .additional-photo-page-border {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  object-fit: fill;
+  pointer-events: none;
+}
+
+.preview-section .additional-photo-page-img {
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  width: 80%;
+  height: 80%;
+  z-index: 1;
+  object-fit: contain;
 }
 
 /* ── Photo corner — proportionally smaller than the download-page version

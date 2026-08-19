@@ -1633,10 +1633,163 @@
   background: #166534;
 }
 
-/* Mini-preview base box/scroll/watermark/border-img/brand-credit/additional-photo-page
-   rules migrated to biodata-preview-shared.css, scoped under `.preview-section`
-   (see that file's "MINI PREVIEW CONTEXT OVERRIDES" block). See task-6a-report.md
-   for the full old-rule -> new-rule mapping. */
+.mini-biodata-preview-mini {
+  border-radius: 0;
+  overflow: hidden !important;
+  border: none !important;
+  background: var(--white);
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100%;
+}
+
+/* Inner scroll — no scrolling, wrapper handles it */
+.mini-preview-inner-scroll {
+  overflow: visible;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+  padding: 15px 22px 30px 22px;
+}
+
+/* Elegant border pattern - removed old mehndi pattern */
+
+/* Ornamental border decorations */
+.mini-mehndi-border {
+  position: relative;
+}
+
+
+/* Decorative line pattern around border - DISABLED to avoid conflict with SVG borders */
+/* .mini-mehndi-border::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 10px;
+  background-image:
+    linear-gradient(135deg, var(--border-color, #DC2626) 0%, var(--border-color, #DC2626) 30px, transparent 30px),
+    linear-gradient(225deg, var(--border-color, #DC2626) 0%, var(--border-color, #DC2626) 30px, transparent 30px),
+    linear-gradient(-45deg, var(--border-color, #DC2626) 0%, var(--border-color, #DC2626) 30px, transparent 30px),
+    linear-gradient(45deg, var(--border-color, #DC2626) 0%, var(--border-color, #DC2626) 30px, transparent 30px);
+  background-size: 40px 40px;
+  background-position: top left, top right, bottom left, bottom right;
+  background-repeat: no-repeat;
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 0;
+} */
+
+/* Religious symbol as watermark - random placement at 3-4 places */
+.mini-symbol-watermark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+  overflow: hidden;
+}
+
+.mini-symbol-watermark span {
+  position: absolute;
+  font-size: 6rem;
+  opacity: 0.05;
+  pointer-events: none;
+}
+
+/* Position 1 - Top Left Area */
+.mini-symbol-watermark span:nth-child(1) {
+  top: 12%;
+  left: 20%;
+  transform: rotate(-20deg);
+}
+
+/* Position 2 - Top Right Area */
+.mini-symbol-watermark span:nth-child(2) {
+  top: 25%;
+  right: 15%;
+  transform: rotate(15deg);
+}
+
+/* Position 3 - Middle Left Area */
+.mini-symbol-watermark span:nth-child(3) {
+  top: 50%;
+  left: 15%;
+  transform: translateY(-50%) rotate(-10deg);
+}
+
+/* Position 4 - Bottom Center Area */
+.mini-symbol-watermark span:nth-child(4) {
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%) rotate(20deg);
+}
+
+/* Enhanced ornamental border system with COMPLETE SVG FRAMES */
+
+/* SVG border rendered as real img element — pinned over the outer box */
+.mini-preview-border-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+  object-fit: fill;
+  border-radius: 0;
+}
+
+/* Mirrors the download page and PDF's brand credit line — pinned near the box's bottom edge, above the border image */
+.mini-preview-brand-credit {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 12px;
+  z-index: 11;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.mini-additional-photo-page {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 210 / 297;
+  background: #ffffff;
+  margin-top: 12px;
+  overflow: hidden;
+}
+
+.mini-additional-photo-page-border {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  object-fit: fill;
+  pointer-events: none;
+}
+
+.mini-additional-photo-page-img {
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  width: 80%;
+  height: 80%;
+  z-index: 1;
+  object-fit: contain;
+}
 
 /* Custom border overlay for preview with dynamic color */
 .preview-custom-border {
@@ -1877,52 +2030,98 @@
 
 /* Template 17 (royal-mandala / Pearl Strand): now formatted as Royal dark — gallery uses var(--border-image) via base rule + generateBorderSVG (gold pearl strands from updated svgPatterns) */
 
-/* Dark Royal Templates — mini-preview background/gold-typography rules (previously
-   `.border-template-X.mini-biodata-preview-mini` / `.border-template-X .mini-preview-field`
-   etc.) migrated to biodata-preview-shared.css, scoped under `.preview-section`. The
-   background-color/background-image and text-color values were identical to the
-   unscoped `.border-template-X.biodata-preview-mini` / `.border-template-X .preview-field`
-   rules already in that file (byte-for-byte, verified during migration) — only the
-   `.preview-field` margin/line-height box-model tweak was mini-specific and is now
-   `.preview-section .border-template-X .preview-field { margin: 0; line-height: 1.4; }`
-   in biodata-preview-shared.css. See task-6a-report.md for the full mapping. */
+/* ── Dark Royal Templates — backgrounds ── */
+.border-template-sapphire-classic.mini-biodata-preview-mini {
+  background-color: #16243D !important;
+  background-image: linear-gradient(155deg, #1E3252 0%, #101B2E 100%) !important;
+}
+.border-template-crimson-rose.mini-biodata-preview-mini {
+  background-color: #3A0B1E !important;
+  background-image: linear-gradient(155deg, #5B1230 0%, #270714 100%) !important;
+}
+.border-template-peacock-green.mini-biodata-preview-mini {
+  background-color: #0A2E2A !important;
+  background-image: linear-gradient(155deg, #0E423B 0%, #05201D 100%) !important;
+}
+.border-template-amber-classic.mini-biodata-preview-mini {
+  background-color: #29132B !important;
+  background-image: linear-gradient(155deg, #3D1A40 0%, #1A0A1C 100%) !important;
+}
+.border-template-royal-mandala.mini-biodata-preview-mini {
+  background-color: #1C1C1C !important;
+  background-image: linear-gradient(155deg, #2E2E2E 0%, #0E0E0E 100%) !important;
+}
+
+/* ── Dark Royal Templates — gold typography ── */
+.border-template-sapphire-classic .mini-preview-field strong,
+.border-template-crimson-rose .mini-preview-field strong,
+.border-template-peacock-green .mini-preview-field strong,
+.border-template-amber-classic .mini-preview-field strong,
+.border-template-royal-mandala .mini-preview-field strong {
+  color: #E8C77A;
+}
+
+.border-template-sapphire-classic .mini-preview-field,
+.border-template-crimson-rose .mini-preview-field,
+.border-template-peacock-green .mini-preview-field,
+.border-template-amber-classic .mini-preview-field,
+.border-template-royal-mandala .mini-preview-field {
+  color: #EDE3CC;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.border-template-sapphire-classic .mini-preview-name-title,
+.border-template-crimson-rose .mini-preview-name-title,
+.border-template-peacock-green .mini-preview-name-title,
+.border-template-amber-classic .mini-preview-name-title,
+.border-template-royal-mandala .mini-preview-name-title {
+  color: #FFFFFF;
+}
+
+.border-template-sapphire-classic .mini-shree-ganesh-text,
+.border-template-crimson-rose .mini-shree-ganesh-text,
+.border-template-peacock-green .mini-shree-ganesh-text,
+.border-template-amber-classic .mini-shree-ganesh-text,
+.border-template-royal-mandala .mini-shree-ganesh-text,
+.border-template-sapphire-classic .mini-header-icon-left,
+.border-template-sapphire-classic .mini-header-icon-right,
+.border-template-crimson-rose .mini-header-icon-left,
+.border-template-crimson-rose .mini-header-icon-right,
+.border-template-peacock-green .mini-header-icon-left,
+.border-template-peacock-green .mini-header-icon-right,
+.border-template-amber-classic .mini-header-icon-left,
+.border-template-amber-classic .mini-header-icon-right,
+.border-template-royal-mandala .mini-header-icon-left,
+.border-template-royal-mandala .mini-header-icon-right {
+  color: #E8C77A;
+  background: transparent;
+}
+
+.border-template-sapphire-classic .mini-biodata-header,
+.border-template-crimson-rose .mini-biodata-header,
+.border-template-peacock-green .mini-biodata-header,
+.border-template-amber-classic .mini-biodata-header,
+.border-template-royal-mandala .mini-biodata-header {
+  color: #FFFFFF;
+}
+
+.border-template-sapphire-classic .mini-preview-empty p,
+.border-template-crimson-rose .mini-preview-empty p,
+.border-template-peacock-green .mini-preview-empty p,
+.border-template-amber-classic .mini-preview-empty p,
+.border-template-royal-mandala .mini-preview-empty p {
+  color: #9DB0C9;
+}
 
 /* ── Preview section labels ── */
-.preview-section-label {
-  font-size: 0.5rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  padding: 6px 6px 3px;
-  margin-top: 7px;
-  margin-bottom: 1px;
-  opacity: 0.9;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.preview-section-label:first-child {
-  margin-top: 0;
-}
-
-.preview-section-label::before,
-.preview-section-label::after {
-  content: '';
-  flex: 1;
-  height: 0.5px;
-  background: currentColor;
-  opacity: 0.4;
-}
-
-/* Dark royal templates: section label text stays gold */
-.border-template-sapphire-classic .preview-section-label,
-.border-template-crimson-rose .preview-section-label,
-.border-template-peacock-green .preview-section-label,
-.border-template-amber-classic .preview-section-label,
-.border-template-royal-mandala .preview-section-label {
-  color: #E8C77A !important;
-}
+/* The unscoped `.preview-section-label` rule (mini-sized values: 0.5rem font-size, etc.) that
+   used to live here was deleted in the Task 6a fix-round: it duplicated
+   `.preview-section .preview-section-label` (biodata-preview-shared.css), and once
+   CreateBiodataNew.tsx imports that shared stylesheet, leaving both in place would create a
+   cross-stylesheet specificity race for this one class. The scoped rule in
+   biodata-preview-shared.css is strictly more specific and carries the same values, so removing
+   the unscoped duplicate here is safe and removes the hazard. See task-6a-report.md. */
 
 
 /* Dark Royal Templates gallery-card text override → shared in ../components/TemplateCard.css */
@@ -1941,27 +2140,465 @@
 /* Template 2: modern-green - No additional header decoration needed (border has built-in top ornament) */
 /* (other header/field/name rules now in biodata-preview-shared.css) */
 
-/* Premium/Festive/Luxury/golden-yellow/Template 4-15 decorative `.mini-preview-name-title::before`
-   ornaments (previously here) were NOT migrated. They were already dead/inert CSS before this
-   task: `.mini-preview-name-title::before { display: none !important; }` (a blanket suppression
-   rule that existed further down in this same file) always wins the cascade over these
-   non-`!important` declarations regardless of selector specificity or source order, so none of
-   these ornaments have rendered in the mini preview for as long as that blanket rule has existed.
-   The equivalent unprefixed blanket suppression (`.preview-name-title::before { display: none
-   !important; }`) already exists in biodata-preview-shared.css and produces the same (non-)result.
-   Re-migrating already-dead code into a second file would not restore any visual behavior, so
-   these were intentionally left out — not silently dropped. See task-6a-report.md. */
+/* Premium - Elegant pattern with larger ornate elements */
+.border-template-golden-yellow .mini-preview-name-title::before {
+  content: '';
+  position: absolute;
+  top: -26px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 220px;
+  height: 24px;
+  background-image:
+    /* Center large diamond */
+    radial-gradient(circle at 110px 12px, var(--border-color, #DC2626) 5px, transparent 5px),
+    /* Inner ring */
+    radial-gradient(circle at 110px 12px, transparent 7px, var(--border-color, #DC2626) 7px, var(--border-color, #DC2626) 8px, transparent 8px),
+    /* Side ornaments */
+    radial-gradient(circle at 85px 12px, var(--border-color, #DC2626) 3.5px, transparent 3.5px),
+    radial-gradient(circle at 135px 12px, var(--border-color, #DC2626) 3.5px, transparent 3.5px),
+    /* Outer circles */
+    radial-gradient(circle at 68px 12px, var(--border-color, #DC2626) 2.5px, transparent 2.5px),
+    radial-gradient(circle at 152px 12px, var(--border-color, #DC2626) 2.5px, transparent 2.5px),
+    /* Decorative lines */
+    linear-gradient(90deg, transparent 0%, transparent 62px, var(--border-color, #DC2626) 62px, var(--border-color, #DC2626) 64px, transparent 64px, transparent 156px, var(--border-color, #DC2626) 156px, var(--border-color, #DC2626) 158px, transparent 158px);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  opacity: 0.8;
+  pointer-events: none;
+  z-index: 10;
+}
 
-/* Mini-preview photo-corner/name-title/field/header/elegant-red/modern-green rules migrated to
-   biodata-preview-shared.css, scoped under `.preview-section` (see that file's "MINI PREVIEW
-   CONTEXT OVERRIDES" block). See task-6a-report.md for the full old-rule -> new-rule mapping. */
+/* Festive - Vibrant pattern with multiple small circles */
+.border-template-festive-trio .mini-preview-name-title::before {
+  content: '';
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 190px;
+  height: 20px;
+  background-image:
+    /* Center cluster */
+    radial-gradient(circle at 95px 10px, var(--border-color, #DC2626) 3px, transparent 3px),
+    radial-gradient(circle at 88px 10px, var(--border-color, #DC2626) 2px, transparent 2px),
+    radial-gradient(circle at 102px 10px, var(--border-color, #DC2626) 2px, transparent 2px),
+    radial-gradient(circle at 95px 5px, var(--border-color, #DC2626) 1.5px, transparent 1.5px),
+    radial-gradient(circle at 95px 15px, var(--border-color, #DC2626) 1.5px, transparent 1.5px),
+    /* Side clusters */
+    radial-gradient(circle at 75px 10px, var(--border-color, #DC2626) 2.5px, transparent 2.5px),
+    radial-gradient(circle at 115px 10px, var(--border-color, #DC2626) 2.5px, transparent 2.5px),
+    radial-gradient(circle at 70px 7px, var(--border-color, #DC2626) 1.5px, transparent 1.5px),
+    radial-gradient(circle at 120px 7px, var(--border-color, #DC2626) 1.5px, transparent 1.5px),
+    /* Outer dots */
+    radial-gradient(circle at 60px 10px, var(--border-color, #DC2626) 2px, transparent 2px),
+    radial-gradient(circle at 130px 10px, var(--border-color, #DC2626) 2px, transparent 2px),
+    /* Connecting lines */
+    linear-gradient(90deg, transparent 0%, transparent 55px, var(--border-color, #DC2626) 55px, var(--border-color, #DC2626) 56px, transparent 56px, transparent 134px, var(--border-color, #DC2626) 134px, var(--border-color, #DC2626) 135px, transparent 135px);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  opacity: 0.8;
+  pointer-events: none;
+  z-index: 10;
+}
 
-/* Unprefixed, unrelated to the mini-* migration above — already dead/unused CSS before this
-   task (no JSX anywhere references this class); left in place as-is. */
+/* Luxury - Sophisticated pattern with star-like elements */
+.border-template-luxury-gold .mini-preview-name-title::before {
+  content: '';
+  position: absolute;
+  top: -26px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 230px;
+  height: 24px;
+  background-image:
+    /* Center star pattern */
+    radial-gradient(circle at 115px 12px, var(--border-color, #DC2626) 4px, transparent 4px),
+    radial-gradient(circle at 115px 6px, var(--border-color, #DC2626) 1.5px, transparent 1.5px),
+    radial-gradient(circle at 115px 18px, var(--border-color, #DC2626) 1.5px, transparent 1.5px),
+    radial-gradient(circle at 109px 12px, var(--border-color, #DC2626) 1.5px, transparent 1.5px),
+    radial-gradient(circle at 121px 12px, var(--border-color, #DC2626) 1.5px, transparent 1.5px),
+    /* Side ornaments */
+    radial-gradient(circle at 90px 12px, var(--border-color, #DC2626) 3px, transparent 3px),
+    radial-gradient(circle at 140px 12px, var(--border-color, #DC2626) 3px, transparent 3px),
+    radial-gradient(circle at 85px 8px, var(--border-color, #DC2626) 1.5px, transparent 1.5px),
+    radial-gradient(circle at 145px 8px, var(--border-color, #DC2626) 1.5px, transparent 1.5px),
+    /* Outer elements */
+    radial-gradient(circle at 70px 12px, var(--border-color, #DC2626) 2.5px, transparent 2.5px),
+    radial-gradient(circle at 160px 12px, var(--border-color, #DC2626) 2.5px, transparent 2.5px),
+    /* Decorative lines with breaks */
+    linear-gradient(90deg, transparent 0%, transparent 64px, var(--border-color, #DC2626) 64px, var(--border-color, #DC2626) 66px, transparent 66px, transparent 164px, var(--border-color, #DC2626) 164px, var(--border-color, #DC2626) 166px, transparent 166px);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  opacity: 0.85;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Template 3: golden-yellow - Ornate triangles with dots */
+.border-template-golden-yellow .mini-preview-name-title::before {
+  content: '';
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 210px;
+  height: 22px;
+  background-image:
+    radial-gradient(circle at 105px 11px, var(--border-color, #DC2626) 5px, transparent 5px),
+    radial-gradient(circle at 90px 11px, var(--border-color, #DC2626) 3px, transparent 3px),
+    radial-gradient(circle at 120px 11px, var(--border-color, #DC2626) 3px, transparent 3px),
+    radial-gradient(circle at 75px 11px, var(--border-color, #DC2626) 2px, transparent 2px),
+    radial-gradient(circle at 135px 11px, var(--border-color, #DC2626) 2px, transparent 2px),
+    radial-gradient(circle at 62px 11px, var(--border-color, #DC2626) 1.5px, transparent 1.5px),
+    radial-gradient(circle at 148px 11px, var(--border-color, #DC2626) 1.5px, transparent 1.5px),
+    linear-gradient(90deg, transparent 57px, var(--border-color, #DC2626) 57px, var(--border-color, #DC2626) 59px, transparent 59px, transparent 151px, var(--border-color, #DC2626) 151px, var(--border-color, #DC2626) 153px, transparent 153px);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  opacity: 0.75;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Template 4-15: Add remaining unique variations */
+.border-template-festive-trio .mini-preview-name-title::before,
+.border-template-royal-red .mini-preview-name-title::before,
+.border-template-nature-green .mini-preview-name-title::before,
+.border-template-luxury-gold .mini-preview-name-title::before,
+.border-template-maroon-elegance .mini-preview-name-title::before,
+.border-template-pink-blossom .mini-preview-name-title::before,
+.border-template-emerald-classic .mini-preview-name-title::before,
+.border-template-royal-blue .mini-preview-name-title::before,
+.border-template-crimson-rose .mini-preview-name-title::before,
+.border-template-peacock-green .mini-preview-name-title::before {
+  content: '';
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 20px;
+  opacity: 0.7;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Each template gets unique pattern - showing variation */
+.border-template-festive-trio .mini-preview-name-title::before {
+  background-image:
+    radial-gradient(circle at 100px 10px, var(--border-color, #DC2626) 4px, transparent 4px),
+    radial-gradient(circle at 85px 10px, var(--border-color, #DC2626) 3px, transparent 3px),
+    radial-gradient(circle at 115px 10px, var(--border-color, #DC2626) 3px, transparent 3px),
+    radial-gradient(circle at 70px 10px, var(--border-color, #DC2626) 2.5px, transparent 2.5px),
+    radial-gradient(circle at 130px 10px, var(--border-color, #DC2626) 2.5px, transparent 2.5px),
+    linear-gradient(90deg, transparent 65px, var(--border-color, #DC2626) 65px, var(--border-color, #DC2626) 67px, transparent 67px, transparent 133px, var(--border-color, #DC2626) 133px, var(--border-color, #DC2626) 135px, transparent 135px);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+.border-template-royal-red .mini-preview-name-title::before {
+  background-image:
+    radial-gradient(circle at 100px 10px, var(--border-color, #DC2626) 5px, transparent 5px),
+    radial-gradient(circle at 82px 10px, var(--border-color, #DC2626) 3px, transparent 3px),
+    radial-gradient(circle at 118px 10px, var(--border-color, #DC2626) 3px, transparent 3px),
+    radial-gradient(circle at 100px 10px, transparent 7px, var(--border-color, #DC2626) 7px, var(--border-color, #DC2626) 9px, transparent 9px),
+    linear-gradient(90deg, transparent 77px, var(--border-color, #DC2626) 77px, var(--border-color, #DC2626) 79px, transparent 79px, transparent 121px, var(--border-color, #DC2626) 121px, var(--border-color, #DC2626) 123px, transparent 123px);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+.border-template-nature-green .mini-preview-name-title::before {
+  background-image:
+    radial-gradient(ellipse 10px 4px at 100px 10px, var(--border-color, #DC2626) 100%, transparent 100%),
+    radial-gradient(circle at 85px 10px, var(--border-color, #DC2626) 2.5px, transparent 2.5px),
+    radial-gradient(circle at 115px 10px, var(--border-color, #DC2626) 2.5px, transparent 2.5px),
+    radial-gradient(circle at 73px 10px, var(--border-color, #DC2626) 2px, transparent 2px),
+    radial-gradient(circle at 127px 10px, var(--border-color, #DC2626) 2px, transparent 2px),
+    linear-gradient(90deg, transparent 68px, var(--border-color, #DC2626) 68px, var(--border-color, #DC2626) 69px, transparent 69px, transparent 131px, var(--border-color, #DC2626) 131px, var(--border-color, #DC2626) 132px, transparent 132px);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+.border-template-luxury-gold .mini-preview-name-title::before {
+  width: 230px;
+  height: 24px;
+  top: -26px;
+  background-image:
+    radial-gradient(circle at 115px 12px, var(--border-color, #DC2626) 5px, transparent 5px),
+    radial-gradient(circle at 100px 12px, var(--border-color, #DC2626) 3px, transparent 3px),
+    radial-gradient(circle at 130px 12px, var(--border-color, #DC2626) 3px, transparent 3px),
+    radial-gradient(circle at 85px 12px, var(--border-color, #DC2626) 2px, transparent 2px),
+    radial-gradient(circle at 145px 12px, var(--border-color, #DC2626) 2px, transparent 2px),
+    linear-gradient(90deg, transparent 80px, var(--border-color, #DC2626) 80px, var(--border-color, #DC2626) 82px, transparent 82px, transparent 148px, var(--border-color, #DC2626) 148px, var(--border-color, #DC2626) 150px, transparent 150px);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  opacity: 0.85;
+}
+
+.border-template-maroon-elegance .mini-preview-name-title::before {
+  background-image:
+    radial-gradient(circle at 100px 10px, var(--border-color, #DC2626) 3.5px, transparent 3.5px),
+    radial-gradient(circle at 88px 10px, var(--border-color, #DC2626) 2.5px, transparent 2.5px),
+    radial-gradient(circle at 112px 10px, var(--border-color, #DC2626) 2.5px, transparent 2.5px),
+    radial-gradient(circle at 76px 10px, var(--border-color, #DC2626) 2px, transparent 2px),
+    radial-gradient(circle at 124px 10px, var(--border-color, #DC2626) 2px, transparent 2px),
+    radial-gradient(circle at 66px 10px, var(--border-color, #DC2626) 1.5px, transparent 1.5px),
+    radial-gradient(circle at 134px 10px, var(--border-color, #DC2626) 1.5px, transparent 1.5px),
+    linear-gradient(90deg, transparent 61px, var(--border-color, #DC2626) 61px, var(--border-color, #DC2626) 63px, transparent 63px, transparent 137px, var(--border-color, #DC2626) 137px, var(--border-color, #DC2626) 139px, transparent 139px);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+.border-template-pink-blossom .mini-preview-name-title::before,
+.border-template-emerald-classic .mini-preview-name-title::before,
+.border-template-royal-blue .mini-preview-name-title::before,
+.border-template-crimson-rose .mini-preview-name-title::before,
+.border-template-peacock-green .mini-preview-name-title::before {
+  background-image:
+    radial-gradient(circle at 100px 10px, var(--border-color, #DC2626) 4px, transparent 4px),
+    radial-gradient(circle at 80px 10px, var(--border-color, #DC2626) 3px, transparent 3px),
+    radial-gradient(circle at 120px 10px, var(--border-color, #DC2626) 3px, transparent 3px),
+    radial-gradient(circle at 65px 10px, var(--border-color, #DC2626) 2px, transparent 2px),
+    radial-gradient(circle at 135px 10px, var(--border-color, #DC2626) 2px, transparent 2px),
+    linear-gradient(90deg, transparent 60px, var(--border-color, #DC2626) 60px, var(--border-color, #DC2626) 62px, transparent 62px, transparent 138px, var(--border-color, #DC2626) 138px, var(--border-color, #DC2626) 140px, transparent 140px);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+.mini-preview-photo-corner {
+  position: absolute;
+  top: 110px;
+  right: 28px;
+  width: 80px;
+  /* Matches the Upload Photo selector card's 3:4 rectangle so the crop shown here (how much
+     face vs. shoulders/body is visible) matches what the user picked, not a cropped-differently square. */
+  height: 106.7px;
+  border-radius: 6px;
+  border: 2px solid currentColor;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  z-index: 0;
+  background: white;
+  box-sizing: content-box;
+}
+
+.mini-preview-photo-corner.photo-shape-circle {
+  height: 80px;
+  border-radius: 50%;
+}
+
+
+.mini-preview-photo-corner img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+/* ── Name title ── */
+.mini-preview-name-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin: 0 0 2px 0;
+  padding: 4px 12px 2px;
+  text-align: center;
+  position: relative;
+}
+
+.mini-preview-name-title::before {
+  display: none !important;
+}
+
+/* ── Field rows ── */
+/* Only Personal Details + Religion Details sit beside the photo, so only their fields need to
+   dodge it horizontally — Family/Contact/Partner Preferences have the full row width and would
+   wrap more than necessary if this padding applied to them too. */
+.mini-has-photo .mini-preview-fields-before-photo-clear .mini-preview-field {
+  padding-right: 112px;
+}
+
+/* The photo is absolutely positioned starting at roughly the same vertical point this wrapper
+   (Personal Details + Religion Details) does, so giving the wrapper at least the photo's own
+   height pushes Family Information/Contact Information/Partner Preferences to start after the
+   photo ends in normal document flow — instead of them rendering earlier and running behind it
+   when Personal Details has few fields filled in. */
+.mini-has-photo .mini-preview-fields-before-photo-clear {
+  min-height: 132px;
+}
+
+.mini-preview-mini-content {
+  padding: 0;
+  padding-bottom: 12px;
+  flex: 0 0 auto;
+  overflow: visible;
+  position: relative;
+  font-size: 7px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.mini-preview-field {
+  display: flex;
+  padding: 2px 4px;
+  border-bottom: none;
+  font-size: 7px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transform: translateZ(0);
+}
+
+.mini-preview-field:last-child {
+  border-bottom: none;
+}
+
+/* flex (not inline-block) so a wrapped value stays indented under the value column instead of
+   falling back to the row's far left edge, which would collide with the label above it. */
+.mini-preview-field strong {
+  color: var(--gray-700);
+  font-weight: 600;
+  flex: 0 0 100px;
+  font-size: 7px;
+}
+
+/* The value's own flex item — takes the remaining row width so it only wraps when it truly
+   doesn't fit, instead of an unwrapped text node defaulting to its own shrink-to-fit line. */
+.mini-preview-field span {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.mini-preview-empty {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--gray-400);
+}
+
+/* ── Header elements ── */
+.mini-ganesha-icon-header {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.5rem;
+  z-index: 10;
+  display: none;
+}
+
+.mini-shree-ganesh-header {
+  text-align: center;
+  padding: 2px 16px 1px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.mini-shree-ganesh-text {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: #333333;
+  letter-spacing: 1px;
+  font-family: serif;
+}
+
+.mini-biodata-header {
+  text-align: center;
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: #000000;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: sans-serif;
+  padding: 0 16px 4px;
+}
+
+.mini-icon-only-header {
+  text-align: center;
+  padding: 4px 16px 2px;
+}
+
+.mini-icon-center {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mini-icon-center svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
 .header-icons-container {
   position: relative;
   height: 0;
   pointer-events: none;
+}
+
+.mini-header-icon-left {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 11;
+  vertical-align: middle;
+}
+
+.mini-header-icon-left svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.mini-header-icon-right {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 11;
+  vertical-align: middle;
+}
+
+.mini-header-icon-right svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ── Template 1 (elegant-red) ── */
+.border-template-elegant-red .mini-preview-name-title::before,
+.border-template-elegant-red.mini-hide-shree-ganesh .mini-preview-name-title::before {
+  display: none !important;
+}
+
+.border-template-elegant-red .mini-preview-name-title::after,
+.border-template-elegant-red.mini-hide-biodata .mini-preview-name-title::after {
+  display: none !important;
+}
+
+.border-template-elegant-red .mini-preview-name-title {
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 4px 0;
+  padding: 8px 12px 4px;
+  letter-spacing: 0.5px;
+}
+
+/* ── Template 2 (modern-green) ── */
+.border-template-modern-green .mini-preview-name-title::before {
+  display: none;
 }
 
 .preview-mini-footer {
@@ -2025,8 +2662,9 @@
     font-size: 2rem;
   }
 
-  /* .mini-preview-mini-content max-height override migrated to biodata-preview-shared.css
-     as `.preview-section .preview-mini-content` inside the same max-width: 968px breakpoint. */
+  .mini-preview-mini-content {
+    max-height: 400px;
+  }
 }
 
 @media (max-width: 640px) {

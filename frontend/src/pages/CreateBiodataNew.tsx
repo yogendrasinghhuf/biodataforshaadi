@@ -12,6 +12,7 @@ import { templates, getTemplateById, getOriginalPrice } from '../data/templates'
 import { godIcons, getIconSvg, normalizeIconId } from '../data/godIcons';
 import html2canvas from 'html2canvas';
 import '../components/TemplateCard.css';
+import './biodata-preview-shared.css';
 import './CreateBiodataNew.css';
 
 interface BiodataForm {
