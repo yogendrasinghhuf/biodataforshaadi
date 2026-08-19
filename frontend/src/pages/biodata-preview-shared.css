@@ -457,3 +457,184 @@
 .border-template-royal-mandala .preview-empty p {
   color: #9DB0C9;
 }
+
+/* ========================================
+   MINI PREVIEW CONTEXT OVERRIDES
+   Scoped to `.preview-section` — the live-preview column that exists only in
+   CreateBiodataNew.tsx (found at the top of its "Right Side - Live Preview" block).
+   BiodataPage.tsx renders the SAME unprefixed classes above for both the small
+   mini-preview box (CreateBiodataNew.tsx) and the larger download-page preview
+   box (Preview.tsx). Historically the mini box had its own separate mini-*
+   prefixed CSS namespace (previously in CreateBiodataNew.css) with values tuned
+   for its smaller absolute size. These rules restore those exact tuned values,
+   scoped under `.preview-section` so they apply ONLY inside CreateBiodataNew.tsx
+   and never bleed into Preview.tsx's (unscoped) larger rendering. Migrated from
+   the old mini-* rules verbatim (see task-6a-report.md for the full mapping);
+   do not "simplify" these back toward the unscoped values above — the box sizes
+   are genuinely different (mini ≈360px wide vs download-page ≈650px wide).
+   ======================================== */
+
+/* Base box: mini box additionally needs flex layout (for its scrollable inner
+   area) and its own box-shadow/square-corner treatment, which the unscoped
+   `.biodata-preview-mini` has no base rule for at all (Preview.tsx supplies its
+   own subset via `.preview-layout .biodata-preview-mini` in Preview.css). */
+.preview-section .biodata-preview-mini {
+  border-radius: 0;
+  overflow: hidden !important;
+  border: none !important;
+  background: var(--white);
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100%;
+}
+
+/* Inner scroll — mini box relies on its OUTER `.preview-scroll-wrapper` (in
+   CreateBiodataNew.css) for scrolling, so this must stay `overflow: visible`
+   here, unlike the unscoped `.preview-inner-scroll` above which scrolls itself.
+   (Preview.tsx already overrides this the same way via
+   `.preview-layout .preview-inner-scroll` in Preview.css — same pattern.) */
+.preview-section .preview-inner-scroll {
+  overflow: visible;
+  padding: 15px 22px 30px 22px;
+}
+
+/* SVG border image — square corners at mini scale (unscoped version uses 16px
+   border-radius, meant for the larger download-page box). */
+.preview-section .preview-border-img {
+  border-radius: 0;
+}
+
+/* Brand credit line sits closer to the bottom edge at mini scale. */
+.preview-section .preview-brand-credit {
+  bottom: 12px;
+  font-size: 0.75rem;
+}
+
+/* Additional photo pages — smaller top margin at mini scale. */
+.preview-section .additional-photo-page {
+  margin-top: 12px;
+}
+
+/* ── Photo corner — proportionally smaller than the download-page version
+   (top:145px/right:44px/128x170.7px there vs these values here). ── */
+.preview-section .preview-photo-corner {
+  top: 110px;
+  right: 28px;
+  width: 80px;
+  height: 106.7px;
+  border-radius: 6px;
+  border: 2px solid currentColor;
+}
+
+.preview-section .preview-photo-corner.photo-shape-circle {
+  height: 80px;
+}
+
+/* ── Name title — smaller font/padding at mini scale. ── */
+.preview-section .preview-name-title {
+  font-size: 0.75rem;
+  margin: 0 0 2px 0;
+  padding: 4px 12px 2px;
+}
+
+/* ── Field rows — photo-dodge padding/min-height scaled down to match the
+   smaller photo corner above. ── */
+.preview-section .has-photo .preview-fields-before-photo-clear .preview-field {
+  padding-right: 112px;
+}
+
+.preview-section .has-photo .preview-fields-before-photo-clear {
+  min-height: 132px;
+}
+
+.preview-section .preview-mini-content {
+  padding-bottom: 12px;
+  font-size: 7px;
+}
+
+.preview-section .preview-field {
+  padding: 2px 4px;
+  font-size: 7px;
+}
+
+.preview-section .preview-field strong {
+  flex: 0 0 100px;
+  font-size: 7px;
+}
+
+.preview-section .preview-field span {
+  font-size: 7px;
+}
+
+/* ── Section labels — smaller/tighter at mini scale (the unscoped
+   `.preview-section-label` above is tuned for the larger download-page box). ── */
+.preview-section .preview-section-label {
+  font-size: 0.5rem;
+  padding: 6px 6px 3px;
+  margin-top: 7px;
+  margin-bottom: 1px;
+  gap: 4px;
+}
+
+.preview-section .preview-section-label:first-child {
+  margin-top: 0;
+}
+
+/* ── Header elements — smaller icons/padding at mini scale. ── */
+.preview-section .shree-ganesh-header {
+  padding: 2px 16px 1px;
+  gap: 12px;
+}
+
+.preview-section .shree-ganesh-text {
+  font-size: 0.65rem;
+}
+
+.preview-section .biodata-header {
+  font-size: 0.62rem;
+  padding: 0 16px 4px;
+}
+
+.preview-section .icon-only-header {
+  padding: 4px 16px 2px;
+}
+
+.preview-section .icon-center,
+.preview-section .header-icon-left,
+.preview-section .header-icon-right {
+  width: 18px;
+  height: 18px;
+}
+
+/* ── Dark royal templates — gold typography, mini-scale tweaks.
+   NOTE: the dark-template BACKGROUND colors themselves (`.border-template-X.biodata-preview-mini`)
+   and the gold `strong`/`preview-field` TEXT COLORS are already identical between the
+   mini-* rules and the unscoped rules above (verified byte-for-byte) — that's why there is
+   no scoped background-color/text-color override here. Only the box-model additions below
+   (margin/line-height on `.preview-field`) were genuinely mini-specific. ── */
+.preview-section .border-template-sapphire-classic .preview-field,
+.preview-section .border-template-crimson-rose .preview-field,
+.preview-section .border-template-peacock-green .preview-field,
+.preview-section .border-template-amber-classic .preview-field,
+.preview-section .border-template-royal-mandala .preview-field {
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ── Elegant-red template — identical to the unscoped rule above; no override
+   needed. Kept as a comment only so this file documents that the old
+   mini-preview-name-title elegant-red rule was checked and found to be a pure
+   duplicate (not migrated as a separate rule since the unscoped
+   `.border-template-elegant-red .preview-name-title` rule above already
+   covers this context). ── */
+
+@media (max-width: 968px) {
+  .preview-section .preview-mini-content {
+    max-height: 400px;
+  }
+}

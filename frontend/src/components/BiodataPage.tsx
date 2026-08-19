@@ -11,6 +11,7 @@ export interface BiodataPageProps {
   templateBackground?: string;
   effectiveColor: string;
   photo?: File | null;
+  photoSrc?: string; // overrides the computed URL.createObjectURL(photo) src when provided (e.g. a cropped-image data URL)
   photoShape: 'rectangle' | 'circle';
   selectedSymbol?: string;
   showGaneshaIcon: boolean;
@@ -30,6 +31,7 @@ const BiodataPage: React.FC<BiodataPageProps> = ({
   templateBackground,
   effectiveColor,
   photo,
+  photoSrc,
   photoShape,
   selectedSymbol,
   showGaneshaIcon,
@@ -85,7 +87,7 @@ const BiodataPage: React.FC<BiodataPageProps> = ({
 
             {photo && (
               <div className={`preview-photo-corner photo-shape-${photoShape}`} style={{ borderColor: effectiveColor }}>
-                <img src={URL.createObjectURL(photo)} alt="Profile" />
+                <img src={photoSrc || URL.createObjectURL(photo)} alt="Profile" />
               </div>
             )}
 
