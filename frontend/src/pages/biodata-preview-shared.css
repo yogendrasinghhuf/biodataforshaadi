@@ -511,10 +511,23 @@
    CreateBiodataNew.css) for scrolling, so this must stay `overflow: visible`
    here, unlike the unscoped `.preview-inner-scroll` above which scrolls itself.
    (Preview.tsx already overrides this the same way via
-   `.preview-layout .preview-inner-scroll` in Preview.css — same pattern.) */
+   `.preview-layout .preview-inner-scroll` in Preview.css — same pattern.)
+   No padding here: the original mini-* markup put its padding on this OUTER
+   wrapper, but BiodataPage.tsx's real structure carries content padding on the
+   INNER .preview-mini-content-wrap instead (see below) — putting it on both
+   double-counted the top padding, confirmed via measurement to push Shree
+   Ganesh ~6px lower than the download-page preview despite this box being
+   smaller overall. */
 .preview-section .preview-inner-scroll {
   overflow: visible;
-  padding: 15px 22px 30px 22px;
+}
+
+/* Content wrap padding at mini scale — unscoped rule (Preview.css:202-207) sets
+   16px 40px 40px for the larger download-page box; this mirrors the original
+   mini-* padding (15px 22px 30px, from the outer wrapper above) onto the
+   correct element instead of double-applying it. */
+.preview-section .preview-mini-content-wrap {
+  padding: 15px 22px 30px;
 }
 
 /* SVG border image — square corners at mini scale (unscoped version uses 16px
