@@ -523,11 +523,11 @@
 }
 
 /* Content wrap padding at mini scale — unscoped rule (Preview.css:202-207) sets
-   16px 40px 40px for the larger download-page box; this mirrors the original
-   mini-* padding (15px 22px 30px, from the outer wrapper above) onto the
-   correct element instead of double-applying it. */
+   32px 40px 40px for the larger download-page box (widened from 16px so Shree
+   Ganesh clears the top border comfortably); top padding here widened by the
+   same proportion for the mini box's smaller scale, for the same reason. */
 .preview-section .preview-mini-content-wrap {
-  padding: 15px 22px 30px;
+  padding: 24px 22px 30px;
 }
 
 /* SVG border image — square corners at mini scale (unscoped version uses 16px
