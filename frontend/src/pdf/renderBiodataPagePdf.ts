@@ -28,30 +28,49 @@ export interface BiodataPdfInput {
    module exists to kill.
 
    These are not arbitrary. They are converted from the real CSS in
-   pages/biodata-preview-shared.css + pages/Preview.css using the on-screen
-   preview box's own scale:
+   pages/biodata-preview-shared.css + pages/Preview.css at the CSS standard
+   96 CSS px per inch:
 
-     the preview box is 650px wide (.preview-layout .preview-scroll-wrapper's
-     max-width) and represents a 210mm-wide A4 page, so
+       PX_TO_MM = 25.4 / 96 = 0.2646 mm per CSS px
+       PX_TO_PT = 25.4/96 mm / 25.4 * 72 = 0.75 pt per CSS px
 
-       PX_TO_MM = 210 / 650 = 0.3231 mm per CSS px
-       PX_TO_PT = 0.3231mm / 25.4 * 72 = 0.9161 pt per CSS px
+   WHY 96dpi AND NOT 210/650: this used to divide by the preview box's
+   max-width (.preview-layout .preview-scroll-wrapper { max-width: 650px }),
+   giving 0.3231 mm/px — a 22% vertical over-scale. That treated 650px as if it
+   were a full 210mm sheet, but 650px is just how wide the preview column
+   happens to be rendered on screen; it is a viewport-constrained box
+   (`width: 100%` up to 650px), not a statement about paper size. The box's own
+   `min-height: 794px` is the giveaway: 794px is exactly A4's 210mm width at
+   96dpi (210/25.4*96 = 793.7), i.e. the preview is authored in real CSS px
+   against a real A4 sheet, and 96dpi is the conversion CSS itself defines.
+
+   The 650/794 discrepancy inflated every vertical advance by 794/650 = 1.22x.
+   Horizontally it was harmless-looking (the row widths stayed self-consistent
+   because every horizontal constant scaled together), but vertically it meant a
+   perfectly normal 32-field biodata accumulated ~321mm of cursorY against a
+   ~281mm limit and spilled its last section onto a near-empty page 2, leaving
+   ~40% of page 1 blank. Measured in headless Chrome at the real 650px preview
+   width, this biodata's rendered content is 951 CSS px tall; at 96dpi that is
+   251mm of a 297mm page — comfortably one sheet, which is what the on-screen
+   preview shows.
 
    Each constant below cites the CSS declaration it came from, so a future
-   tweak to the on-screen preview has an obvious counterpart here.
+   tweak to the on-screen preview has an obvious counterpart here. The px values
+   are the real getBoundingClientRect heights measured in Chrome, not
+   hand-summed box-model guesses.
    ========================================================================= */
 
 const PAGE_WIDTH_MM = 210;
 const PAGE_HEIGHT_MM = 297;
 
-/** 210 / 650 — the preview box's px-to-mm scale. */
-const PX_TO_MM = PAGE_WIDTH_MM / 650;
+/** 25.4 / 96 — the CSS-standard px-to-mm scale (96 CSS px per inch). */
+const PX_TO_MM = 25.4 / 96;
 /** Same scale expressed in PDF points (jsPDF's setFontSize unit). */
 const PX_TO_PT = (PX_TO_MM / 25.4) * 72;
 
 /** .preview-mini-content-wrap padding: 16px 40px 40px -> 40px side padding. */
-const CONTENT_LEFT_MM = 40 * PX_TO_MM; // 12.9
-const CONTENT_RIGHT_MM = 40 * PX_TO_MM; // 12.9
+const CONTENT_LEFT_MM = 40 * PX_TO_MM; // 10.6
+const CONTENT_RIGHT_MM = 40 * PX_TO_MM; // 10.6
 
 /**
  * Baseline of the first header line. The content wrap starts 16px below the box
@@ -61,31 +80,31 @@ const CONTENT_RIGHT_MM = 40 * PX_TO_MM; // 12.9
  * deliberately added via `pdfTopSpacingAdditionPx` so the header never kisses
  * the top border. Kept because that clearance was a real, user-reported fix.
  */
-const CONTENT_TOP_MM = 32 * PX_TO_MM + 20 * PX_TO_MM; // 16.8
+const CONTENT_TOP_MM = 32 * PX_TO_MM + 20 * PX_TO_MM; // 13.8
 
 /** .preview-photo-corner width: 128px. */
-const PHOTO_WIDTH_MM = 128 * PX_TO_MM; // 41.3
+const PHOTO_WIDTH_MM = 128 * PX_TO_MM; // 33.9
 /** .preview-photo-corner height: 170.7px (the 3:4 rectangle the uploader crops to). */
-const PHOTO_HEIGHT_MM = 170.7 * PX_TO_MM; // 55.1
+const PHOTO_HEIGHT_MM = 170.7 * PX_TO_MM; // 45.2
 /**
  * .preview-photo-corner right: 44px, measured from the content wrap's padding
  * box, which is itself inset 40px. So the gap from the page edge is 84px, i.e.
  * CONTENT_RIGHT_MM (40px) + 44px. This constant is that extra 44px.
  */
-const PHOTO_RIGHT_MM = 44 * PX_TO_MM; // 14.2
+const PHOTO_RIGHT_MM = 44 * PX_TO_MM; // 11.6
 /**
  * .preview-photo-corner top: 145px, measured from the box top, plus the same
  * 20px PDF top clearance applied to the header so the photo moves with the
  * content instead of drifting away from it.
  */
-const PHOTO_TOP_MM = (145 + 20) * PX_TO_MM; // 53.3
+const PHOTO_TOP_MM = (145 + 20) * PX_TO_MM; // 43.7
 /** .preview-photo-corner border: 3px solid currentColor. */
-const PHOTO_BORDER_MM = 3 * PX_TO_MM; // 0.97
+const PHOTO_BORDER_MM = 3 * PX_TO_MM; // 0.79
 /** .preview-photo-corner border-radius: 8px. */
-const PHOTO_RADIUS_MM = 8 * PX_TO_MM; // 2.6
+const PHOTO_RADIUS_MM = 8 * PX_TO_MM; // 2.1
 
 /** .preview-brand-credit bottom: 26px — a fixed inset from the page bottom. */
-const BRAND_CREDIT_BOTTOM_MM = 26 * PX_TO_MM; // 8.4
+const BRAND_CREDIT_BOTTOM_MM = 26 * PX_TO_MM; // 6.9
 
 /**
  * Lowest baseline body text may occupy before it must break to a new page: the
@@ -95,65 +114,95 @@ const BRAND_CREDIT_BOTTOM_MM = 26 * PX_TO_MM; // 8.4
  * this, a fully-filled biodata's last sections printed on top of the credit
  * line and then off the paper entirely.
  */
-const CONTENT_BOTTOM_LIMIT_MM = PAGE_HEIGHT_MM - BRAND_CREDIT_BOTTOM_MM - 8; // ~280.6
+const CONTENT_BOTTOM_LIMIT_MM = PAGE_HEIGHT_MM - BRAND_CREDIT_BOTTOM_MM - 8; // ~282.1
 
 /** .preview-field strong { flex: 0 0 155px } — the label column's fixed width. */
-const LABEL_COL_WIDTH_MM = 155 * PX_TO_MM; // 50.1
+const LABEL_COL_WIDTH_MM = 155 * PX_TO_MM; // 41.0
 /** .preview-field padding: 3px 6px — the 6px horizontal inset on each row. */
-const FIELD_ROW_INSET_MM = 6 * PX_TO_MM; // 1.9
+const FIELD_ROW_INSET_MM = 6 * PX_TO_MM; // 1.6
 
 /**
- * One field row: 11px font x 1.4 line-height = 15.4px, plus .preview-field's
- * 3px top + 3px bottom padding = 21.4px.
+ * One field row. .preview-field is `font-size: 11px; line-height: 1.4;
+ * padding: 3px 6px`, so the box model predicts 11*1.4 + 3 + 3 = 21.4px — but
+ * the line box a browser actually generates is 15.672px, not 15.4px (the used
+ * line-height is rounded to a whole device pixel and the strut is taken from
+ * the font's own ascent/descent), giving a measured getBoundingClientRect
+ * height of 21.672px. Verified in headless Chrome at the real 650px preview
+ * width; every one of the 32 rows in the test biodata measured 21.672px.
  */
-const LINE_HEIGHT_MM = 21.4 * PX_TO_MM; // 6.9
+const LINE_HEIGHT_MM = 21.672 * PX_TO_MM; // 5.74
 /** Wrapped continuation lines get the line box only, not the row padding again. */
-const WRAP_LINE_HEIGHT_MM = 15.4 * PX_TO_MM; // 5.0
+const WRAP_LINE_HEIGHT_MM = 15.672 * PX_TO_MM; // 4.15
 
 /**
- * .preview-section-label: margin-top 11px + padding 9px top / 4px bottom, and
- * its own ~12.8px line. Split into the gap above the label and the advance
- * below it.
+ * .preview-section-label: `font-size: 0.8rem` (12.8px), `line-height` inherited
+ * 1.4 -> a 17.92px line box, `padding: 9px 9px 4px`, `margin: 11px 0 2px`.
+ * Measured border box = 30.906px, measured outer (incl. margins) = 43.906px.
+ * Split into the gap above the label (margin-top + padding-top) and the advance
+ * below it (the rest), so the two sum to the real 43.906px total.
+ *
+ * The old values summed to 38.8px because they used the 12.8px FONT SIZE as if
+ * it were the line height, dropping the 1.4 multiplier entirely.
  */
-const SECTION_GAP_MM = (11 + 9) * PX_TO_MM; // 6.5
-const SECTION_LABEL_ADVANCE_MM = (12.8 + 4 + 2) * PX_TO_MM; // 6.1
+const SECTION_GAP_MM = (11 + 9) * PX_TO_MM; // 5.29
+const SECTION_LABEL_ADVANCE_MM = (43.906 - 20) * PX_TO_MM; // 6.33
 /** .preview-section-label padding-left: 9px. */
-const SECTION_LABEL_INSET_MM = 9 * PX_TO_MM; // 2.9
+const SECTION_LABEL_INSET_MM = 9 * PX_TO_MM; // 2.4
 
-/* Font sizes, converted from the CSS px sizes at PX_TO_PT. */
+/* Font sizes, converted from the CSS px sizes at PX_TO_PT (0.75 pt per CSS px,
+   the standard 96dpi->72pt relationship — a 16px rem is exactly 12pt).
+   1rem = 16px throughout, matching the browser default this CSS relies on
+   (neither :root nor html sets a font-size anywhere in the stylesheets). */
 /** .shree-ganesh-text font-size: 0.72rem = 11.52px. */
-const SHREE_GANESH_PT = 11.52 * PX_TO_PT; // 10.6
+const SHREE_GANESH_PT = 11.52 * PX_TO_PT; // 8.6
 /** .biodata-header font-size: 0.67rem = 10.72px. */
-const BIODATA_PT = 10.72 * PX_TO_PT; // 9.8
+const BIODATA_PT = 10.72 * PX_TO_PT; // 8.0
 /** .preview-name-title font-size: 0.8rem = 12.8px. */
-const NAME_PT = 12.8 * PX_TO_PT; // 11.7
+const NAME_PT = 12.8 * PX_TO_PT; // 9.6
 /** .preview-section-label font-size: 0.8rem = 12.8px. */
-const SECTION_LABEL_PT = 12.8 * PX_TO_PT; // 11.7
+const SECTION_LABEL_PT = 12.8 * PX_TO_PT; // 9.6
 /** .preview-field / strong / span font-size: 11px. */
-const FIELD_PT = 11 * PX_TO_PT; // 10.1
+const FIELD_PT = 11 * PX_TO_PT; // 8.25
 /** .preview-brand-credit font-size: 0.75rem = 12px. */
-const BRAND_CREDIT_PT = 12 * PX_TO_PT; // 11.0
+const BRAND_CREDIT_PT = 12 * PX_TO_PT; // 9.0
 
-/* Vertical advances after each header block, from the CSS box model. */
-/** .shree-ganesh-header padding 6px top / 3px bottom around an ~11.5px line. */
-const SHREE_GANESH_ADVANCE_MM = (11.52 * 1.4 + 3) * PX_TO_MM; // 6.2
-/** .biodata-header padding-bottom: 6px around an ~10.7px line. */
-const BIODATA_ADVANCE_MM = (10.72 * 1.4 + 6) * PX_TO_MM; // 6.8
-/** .preview-name-title: 12.8px line + padding 12/6 + margin-bottom 6px. */
-const NAME_ADVANCE_MM = (12.8 * 1.4 + 6 + 6) * PX_TO_MM; // 9.7
+/* Vertical advances after each header block — the measured outer heights
+   (getBoundingClientRect + margins) from headless Chrome, not box-model sums. */
+/**
+ * .shree-ganesh-header `padding: 6px 16px 3px` around a 15.109px line box
+ * (the flex row's height is set by its tallest item). Measured 25.109px.
+ * The old 19.13px sum applied the 1.4 line-height to .shree-ganesh-text's own
+ * 0.72rem/11.52px font, but the flex CONTAINER's line box is what sets the
+ * height here, and it inherits the 11px/1.4 body metric.
+ */
+const SHREE_GANESH_ADVANCE_MM = 25.109 * PX_TO_MM; // 6.64
+/** .biodata-header: 0.67rem (10.72px) x 1.4 = 15.008px line + 6px padding-bottom. Measured 21px. */
+const BIODATA_ADVANCE_MM = 21 * PX_TO_MM; // 5.56
+/**
+ * .preview-name-title: `font-size: 0.8rem` (12.8px) x 1.4 = 17.92px line box,
+ * `padding: 12px 18px 6px`, `margin: 0 0 6px`. Measured outer = 41.906px.
+ * The old 29.92px sum used 12.8*1.4 for the line (correct) but then added only
+ * 6+6 for the box, dropping the 12px padding-top entirely.
+ *
+ * NOTE: .border-template-elegant-red overrides this to `padding: 8px 12px 4px;
+ * margin: 0 0 4px` -> a measured 33.906px. The 8mm difference is under a
+ * single field row, so this uses the base-rule value for all templates rather
+ * than branching, keeping the header a genuinely fixed coordinate.
+ */
+const NAME_ADVANCE_MM = 41.906 * PX_TO_MM; // 11.09
 /** .icon-center / .header-icon-* are 29px square. */
-const GOD_ICON_SIZE_MM = 29 * PX_TO_MM; // 9.4
+const GOD_ICON_SIZE_MM = 29 * PX_TO_MM; // 7.7
 /** Gap between the god icons and the Shree Ganesh text (.shree-ganesh-header gap: 18px). */
-const GOD_ICON_GAP_MM = 18 * PX_TO_MM; // 5.8
+const GOD_ICON_GAP_MM = 18 * PX_TO_MM; // 4.8
 
 /**
  * .has-photo .preview-fields-before-photo-clear { min-height: 210px } — the
  * first two sections reserve at least the photo's height so Family Information
  * onwards starts below the photo instead of running behind it.
  */
-const PHOTO_CLEAR_MIN_HEIGHT_MM = 210 * PX_TO_MM; // 67.8
+const PHOTO_CLEAR_MIN_HEIGHT_MM = 210 * PX_TO_MM; // 55.6
 /** .has-photo .preview-fields-before-photo-clear .preview-field { padding-right: 180px } */
-const PHOTO_FIELD_DODGE_MM = 180 * PX_TO_MM; // 58.2
+const PHOTO_FIELD_DODGE_MM = 180 * PX_TO_MM; // 47.6
 
 /**
  * Rasterisation density for the profile photo: 12 px/mm is ~305 DPI, i.e. print
