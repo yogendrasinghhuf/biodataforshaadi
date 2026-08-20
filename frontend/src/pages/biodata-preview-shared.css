@@ -594,11 +594,7 @@
 /* ── Photo corner — proportionally smaller than the download-page version
    (top:145px/right:44px/128x170.7px there vs these values here). ── */
 .preview-section .preview-photo-corner {
-  /* Widened from 110px: content-wrap's top padding grew 15px -> 24px (+9px).
-     Mini's .biodata-header/.preview-name-title have their own fully-overriding
-     padding rules (unaffected by the unscoped rule's tuning below), so only
-     the content-wrap change applies here. */
-  top: 119px;
+  top: 105px;
   right: 28px;
   width: 80px;
   height: 106.7px;
