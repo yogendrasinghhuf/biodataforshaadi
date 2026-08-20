@@ -92,14 +92,9 @@ const PHOTO_HEIGHT_MM = 170.7 * PX_TO_MM; // 45.2
  * CONTENT_RIGHT_MM (40px) + 44px. This constant is that extra 44px.
  */
 const PHOTO_RIGHT_MM = 44 * PX_TO_MM; // 11.6
-/**
- * .preview-photo-corner top: originally 145px, now 165px in the CSS after the
- * content-wrap (+16px) and .biodata-header (+4px) padding increases pushed
- * the header text down (confirmed overlapping the photo before this +20px
- * matching adjustment), plus the same 20px PDF top clearance applied to the
- * header so the photo moves with the content instead of drifting away from it.
- */
-const PHOTO_TOP_MM = (165 + 20) * PX_TO_MM; // 48.9
+/** .preview-photo-corner top: 155px, plus the same 20px PDF top clearance
+ * applied to the header so the photo moves with the content. */
+const PHOTO_TOP_MM = (155 + 20) * PX_TO_MM; // 45.6
 /** .preview-photo-corner border: 3px solid currentColor. */
 const PHOTO_BORDER_MM = 3 * PX_TO_MM; // 0.79
 /** .preview-photo-corner border-radius: 8px. */
@@ -190,7 +185,7 @@ const BRAND_CREDIT_PT = 12 * PX_TO_PT; // 9.0
  * 0.72rem/11.52px font, but the flex CONTAINER's line box is what sets the
  * height here, and it inherits the 11px/1.4 body metric.
  */
-const SHREE_GANESH_ADVANCE_MM = (25.109 + 4) * PX_TO_MM; // 7.7
+const SHREE_GANESH_ADVANCE_MM = 25.109 * PX_TO_MM; // 6.64
 /** .biodata-header: 0.67rem (10.72px) x 1.4 = 15.008px line + 6px padding-bottom. Measured 21px. */
 const BIODATA_ADVANCE_MM = 21 * PX_TO_MM; // 5.56
 /**
@@ -207,7 +202,7 @@ const BIODATA_ADVANCE_MM = 21 * PX_TO_MM; // 5.56
  * templates rather than branching, keeping the header a genuinely fixed
  * coordinate.
  */
-const NAME_ADVANCE_MM = (41.906 - 4) * PX_TO_MM; // 10.03
+const NAME_ADVANCE_MM = (41.906 - 10) * PX_TO_MM; // 8.87
 /** .icon-center / .header-icon-* are 29px square. */
 const GOD_ICON_SIZE_MM = 29 * PX_TO_MM; // 7.7
 /** Gap between the god icons and the Shree Ganesh text (.shree-ganesh-header gap: 18px). */

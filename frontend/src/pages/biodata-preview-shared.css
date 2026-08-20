@@ -87,12 +87,7 @@
 /* ── Photo corner ── */
 .preview-photo-corner {
   position: absolute;
-  /* Widened from 145px: the content-wrap top padding (16px -> 32px, +16px)
-     and .biodata-header's top padding (0 -> 4px, +4px) added header height
-     above this box's fixed position, pushing the header text down into where
-     the photo used to sit — confirmed via screenshot showing Personal Details
-     overlapping the photo. */
-  top: 165px;
+  top: 155px;
   right: 44px;
   width: 128px;
   /* Matches the Upload Photo selector card's 3:4 rectangle so the crop shown here (how much
@@ -126,10 +121,7 @@
   font-size: 0.8rem;
   font-weight: 700;
   margin: 0 0 6px 0;
-  /* Top padding tightened from 12px alongside .biodata-header's own reduction
-     (8px -> 4px), keeping the Shree Ganesh/BIO DATA/name block's spacing
-     balanced but less loose overall. */
-  padding: 8px 18px 6px;
+  padding: 2px 18px 6px;
   text-align: center;
   position: relative;
 }
@@ -296,10 +288,7 @@
   letter-spacing: 2px;
   text-transform: uppercase;
   font-family: sans-serif;
-  /* Top padding balances the gap above (against Shree Ganesh's 3px bottom
-     padding) against the gap below (this rule's 6px + the name's 8px top
-     padding) without the overly loose spacing an earlier, larger value left. */
-  padding: 4px 16px 6px;
+  padding: 0 16px 2px;
 }
 
 .icon-only-header {
