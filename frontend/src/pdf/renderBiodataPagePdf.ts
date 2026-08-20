@@ -103,8 +103,17 @@ const PHOTO_BORDER_MM = 3 * PX_TO_MM; // 0.79
 /** .preview-photo-corner border-radius: 8px. */
 const PHOTO_RADIUS_MM = 8 * PX_TO_MM; // 2.1
 
-/** .preview-brand-credit bottom: 26px — a fixed inset from the page bottom. */
-const BRAND_CREDIT_BOTTOM_MM = 26 * PX_TO_MM; // 6.9
+/**
+ * .preview-brand-credit bottom: 26px in the on-screen preview — but that box
+ * never has the PDF's separately-rasterised full-bleed border artwork pressed
+ * right up against it (the live preview's border is a thin overlay, not a
+ * stretched-to-page-edge image). Several templates' decorative bottom pattern
+ * sits well inside the page edge once stretched to a real A4 sheet, so the
+ * credit line needs more real clearance here than its on-screen counterpart —
+ * confirmed by an actual print run overlapping the border at the old, smaller
+ * value. Widened to comfortably clear the most inset template's pattern.
+ */
+const BRAND_CREDIT_BOTTOM_MM = 14;
 
 /**
  * Lowest baseline body text may occupy before it must break to a new page: the
