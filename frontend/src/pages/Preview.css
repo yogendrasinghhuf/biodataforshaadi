@@ -198,9 +198,13 @@
   overflow: visible;
 }
 
-/* Content wrap inside preview-inner-scroll — padding scaled to match the mini-preview's proportion (22px at 360px wide) at this box's larger 650px width */
+/* Content wrap inside preview-inner-scroll. Top padding widened from 16px so
+   the download-page preview's top clearance above Shree Ganesh matches what
+   the mini preview showed before a since-reverted fix accidentally tightened
+   it instead of loosening this side — confirmed via user screenshot that this
+   box, not the mini box, was the one sitting too close to the border. */
 .preview-mini-content-wrap {
-  padding: 16px 40px 40px;
+  padding: 32px 40px 40px;
   display: flex;
   flex-direction: column;
   min-height: 500px;
