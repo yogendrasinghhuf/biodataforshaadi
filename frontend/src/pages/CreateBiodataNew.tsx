@@ -271,6 +271,11 @@ const CreateBiodataNew: React.FC = () => {
       return;
     }
 
+    if (!formData.gender?.trim()) {
+      alert('Please select Gender');
+      return;
+    }
+
     if (!formData.phone?.trim()) {
       alert('Please enter Phone Number');
       return;

@@ -13,6 +13,7 @@ export const FIELD_SECTIONS: FieldSection[] = [
     title: 'Personal Details',
     fields: [
       { key: 'dateOfBirth', label: 'Date of Birth:' },
+      { key: 'gender', label: 'Gender:' },
       { key: 'timeOfBirth', label: 'Time of Birth:' },
       { key: 'placeOfBirth', label: 'Place of Birth:' },
       { key: 'height', label: 'Height:' },

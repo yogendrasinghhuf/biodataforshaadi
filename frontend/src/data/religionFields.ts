@@ -95,6 +95,7 @@ export const religionSpecificFields = {
 export const commonFields = [
   { name: 'fullName', label: 'Full Name', type: 'text', required: true },
   { name: 'dateOfBirth', label: 'Date of Birth', type: 'date', required: true },
+  { name: 'gender', label: 'Gender', type: 'select', required: true, options: ['Male', 'Female', 'Other'] },
   { name: 'timeOfBirth', label: 'Time of Birth', type: 'time', required: false },
   { name: 'placeOfBirth', label: 'Place of Birth', type: 'text', required: false, maxLength: 26 },
   { name: 'height', label: 'Height', type: 'select', required: false, options: generateHeightOptions() },
