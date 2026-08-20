@@ -120,7 +120,7 @@ const BRAND_CREDIT_BOTTOM_MM = 14;
  * this, a fully-filled biodata's last sections printed on top of the credit
  * line and then off the paper entirely.
  */
-const CONTENT_BOTTOM_LIMIT_MM = PAGE_HEIGHT_MM - BRAND_CREDIT_BOTTOM_MM - 8; // ~282.1
+const CONTENT_BOTTOM_LIMIT_MM = PAGE_HEIGHT_MM - BRAND_CREDIT_BOTTOM_MM - 3; // ~280
 
 /** .preview-field strong { flex: 0 0 155px } — the label column's fixed width. */
 const LABEL_COL_WIDTH_MM = 155 * PX_TO_MM; // 41.0
