@@ -462,9 +462,18 @@ export async function renderBiodataPagePdf(doc: jsPDF, input: BiodataPdfInput): 
     doc.setFontSize(BIODATA_PT);
     doc.setTextColor(colors.biodata);
     // .biodata-header has text-transform: uppercase and letter-spacing: 2px.
-    doc.text(input.biodataText.toUpperCase(), centerX, cursorY, {
-      align: 'center',
-      charSpace: 2 * PX_TO_MM,
+    // jsPDF's `align: 'center'` centers the text's width WITHOUT charSpace,
+    // then still draws each character charSpace apart — so combining the two
+    // options visibly drifts the text off-centre by roughly half the total
+    // extra spacing. Compute the true rendered width (including the N-1 gaps
+    // charSpace inserts between characters) and position the left edge
+    // manually instead of relying on align: 'center'.
+    const biodataUpper = input.biodataText.toUpperCase();
+    const biodataCharSpaceMm = 2 * PX_TO_MM;
+    const biodataWidth =
+      doc.getTextWidth(biodataUpper) + biodataCharSpaceMm * Math.max(0, biodataUpper.length - 1);
+    doc.text(biodataUpper, centerX - biodataWidth / 2, cursorY, {
+      charSpace: biodataCharSpaceMm,
     });
     cursorY += BIODATA_ADVANCE_MM;
   }
