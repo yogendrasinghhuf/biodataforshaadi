@@ -84,7 +84,7 @@ export const legalContent: Record<string, LegalPageContent> = {
       {
         heading: '10. Contact Us',
         paragraphs: [
-          'If you have any questions about these Terms of Service, or wish to report a violation, please contact us at support@biodataforshaadi.com.',
+          'If you have any questions about these Terms of Service, or wish to report a violation, please contact us at contact2yogendrasingh@gmail.com.',
         ],
       },
     ],
@@ -140,7 +140,7 @@ export const legalContent: Record<string, LegalPageContent> = {
       {
         heading: '7. Contact Us',
         paragraphs: [
-          'For privacy questions, or to report a concern or breach, contact support@biodataforshaadi.com.',
+          'For privacy questions, or to report a concern or breach, contact contact2yogendrasingh@gmail.com.',
         ],
       },
     ],
@@ -176,7 +176,7 @@ export const legalContent: Record<string, LegalPageContent> = {
       {
         heading: '3. How to Request a Refund',
         paragraphs: [
-          'Email support@biodataforshaadi.com within 24 hours of your purchase, referencing your order ID, with your transaction details and a description of the issue (screenshots help). Requests made after 24 hours will not be considered.',
+          'Email contact2yogendrasingh@gmail.com within 24 hours of your purchase, referencing your order ID, with your transaction details and a description of the issue (screenshots help). Requests made after 24 hours will not be considered.',
         ],
       },
       {
@@ -220,7 +220,7 @@ export const legalContent: Record<string, LegalPageContent> = {
       {
         heading: '4. If Your Download Doesn\'t Start',
         paragraphs: [
-          'If you don\'t receive your download after a successful payment, contact support@biodataforshaadi.com with your transaction details, and we will help resolve the issue or resend your file.',
+          'If you don\'t receive your download after a successful payment, contact contact2yogendrasingh@gmail.com with your transaction details, and we will help resolve the issue or resend your file.',
         ],
       },
     ],
@@ -233,7 +233,7 @@ export const legalContent: Record<string, LegalPageContent> = {
     sections: [
       {
         heading: 'Support Email',
-        paragraphs: ['support@biodataforshaadi.com'],
+        paragraphs: ['contact2yogendrasingh@gmail.com'],
       },
       {
         heading: 'Response Time',
