@@ -93,11 +93,13 @@ const PHOTO_HEIGHT_MM = 170.7 * PX_TO_MM; // 45.2
  */
 const PHOTO_RIGHT_MM = 44 * PX_TO_MM; // 11.6
 /**
- * .preview-photo-corner top: 145px, measured from the box top, plus the same
- * 20px PDF top clearance applied to the header so the photo moves with the
- * content instead of drifting away from it.
+ * .preview-photo-corner top: originally 145px, now 165px in the CSS after the
+ * content-wrap (+16px) and .biodata-header (+4px) padding increases pushed
+ * the header text down (confirmed overlapping the photo before this +20px
+ * matching adjustment), plus the same 20px PDF top clearance applied to the
+ * header so the photo moves with the content instead of drifting away from it.
  */
-const PHOTO_TOP_MM = (145 + 20) * PX_TO_MM; // 43.7
+const PHOTO_TOP_MM = (165 + 20) * PX_TO_MM; // 48.9
 /** .preview-photo-corner border: 3px solid currentColor. */
 const PHOTO_BORDER_MM = 3 * PX_TO_MM; // 0.79
 /** .preview-photo-corner border-radius: 8px. */
@@ -180,28 +182,32 @@ const BRAND_CREDIT_PT = 12 * PX_TO_PT; // 9.0
 /**
  * .shree-ganesh-header `padding: 6px 16px 3px` around a 15.109px line box
  * (the flex row's height is set by its tallest item). Measured 25.109px, plus
- * .biodata-header's own padding-top (0px -> 8px, widened so BIO DATA isn't
- * crammed against Shree Ganesh while the name below it kept a much larger
- * gap) added on top since this advance ends where that next box begins.
+ * .biodata-header's own padding-top (0px -> 4px, widened so BIO DATA isn't
+ * crammed against Shree Ganesh while the name below it kept a larger gap,
+ * then tightened back down from an initial 8px which read as too loose)
+ * added on top since this advance ends where that next box begins.
  * The old 19.13px sum applied the 1.4 line-height to .shree-ganesh-text's own
  * 0.72rem/11.52px font, but the flex CONTAINER's line box is what sets the
  * height here, and it inherits the 11px/1.4 body metric.
  */
-const SHREE_GANESH_ADVANCE_MM = (25.109 + 8) * PX_TO_MM; // 8.75
+const SHREE_GANESH_ADVANCE_MM = (25.109 + 4) * PX_TO_MM; // 7.7
 /** .biodata-header: 0.67rem (10.72px) x 1.4 = 15.008px line + 6px padding-bottom. Measured 21px. */
 const BIODATA_ADVANCE_MM = 21 * PX_TO_MM; // 5.56
 /**
  * .preview-name-title: `font-size: 0.8rem` (12.8px) x 1.4 = 17.92px line box,
- * `padding: 12px 18px 6px`, `margin: 0 0 6px`. Measured outer = 41.906px.
- * The old 29.92px sum used 12.8*1.4 for the line (correct) but then added only
- * 6+6 for the box, dropping the 12px padding-top entirely.
+ * `padding: 8px 18px 6px` (tightened from an initial 12px that read as too
+ * loose alongside the BIO DATA spacing fix), `margin: 0 0 6px`. Base measured
+ * outer was 41.906px at the original 12px top padding; adjusted by -4px for
+ * the padding reduction.
  *
  * NOTE: .border-template-elegant-red overrides this to `padding: 8px 12px 4px;
- * margin: 0 0 4px` -> a measured 33.906px. The 8mm difference is under a
- * single field row, so this uses the base-rule value for all templates rather
- * than branching, keeping the header a genuinely fixed coordinate.
+ * margin: 0 0 4px` -> a measured 33.906px at the ORIGINAL 12px baseline (i.e.
+ * already close to this rule's new tightened value). The remaining difference
+ * is under a single field row, so this uses the base-rule value for all
+ * templates rather than branching, keeping the header a genuinely fixed
+ * coordinate.
  */
-const NAME_ADVANCE_MM = 41.906 * PX_TO_MM; // 11.09
+const NAME_ADVANCE_MM = (41.906 - 4) * PX_TO_MM; // 10.03
 /** .icon-center / .header-icon-* are 29px square. */
 const GOD_ICON_SIZE_MM = 29 * PX_TO_MM; // 7.7
 /** Gap between the god icons and the Shree Ganesh text (.shree-ganesh-header gap: 18px). */
