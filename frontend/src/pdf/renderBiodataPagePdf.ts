@@ -179,12 +179,15 @@ const BRAND_CREDIT_PT = 12 * PX_TO_PT; // 9.0
    (getBoundingClientRect + margins) from headless Chrome, not box-model sums. */
 /**
  * .shree-ganesh-header `padding: 6px 16px 3px` around a 15.109px line box
- * (the flex row's height is set by its tallest item). Measured 25.109px.
+ * (the flex row's height is set by its tallest item). Measured 25.109px, plus
+ * .biodata-header's own padding-top (0px -> 8px, widened so BIO DATA isn't
+ * crammed against Shree Ganesh while the name below it kept a much larger
+ * gap) added on top since this advance ends where that next box begins.
  * The old 19.13px sum applied the 1.4 line-height to .shree-ganesh-text's own
  * 0.72rem/11.52px font, but the flex CONTAINER's line box is what sets the
  * height here, and it inherits the 11px/1.4 body metric.
  */
-const SHREE_GANESH_ADVANCE_MM = 25.109 * PX_TO_MM; // 6.64
+const SHREE_GANESH_ADVANCE_MM = (25.109 + 8) * PX_TO_MM; // 8.75
 /** .biodata-header: 0.67rem (10.72px) x 1.4 = 15.008px line + 6px padding-bottom. Measured 21px. */
 const BIODATA_ADVANCE_MM = 21 * PX_TO_MM; // 5.56
 /**
