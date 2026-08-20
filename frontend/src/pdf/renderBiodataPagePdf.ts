@@ -94,7 +94,7 @@ const PHOTO_HEIGHT_MM = 170.7 * PX_TO_MM; // 45.2
 const PHOTO_RIGHT_MM = 44 * PX_TO_MM; // 11.6
 /** .preview-photo-corner top: 155px, plus the same 20px PDF top clearance
  * applied to the header so the photo moves with the content. */
-const PHOTO_TOP_MM = (155 + 20) * PX_TO_MM; // 45.6
+const PHOTO_TOP_MM = (135 + 20) * PX_TO_MM; // 41.1
 /** .preview-photo-corner border: 3px solid currentColor. */
 const PHOTO_BORDER_MM = 3 * PX_TO_MM; // 0.79
 /** .preview-photo-corner border-radius: 8px. */
