@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-// import axios from 'axios'; // Will be used when payment is enabled
+import axios from 'axios';
 import { getTemplateById, getOriginalPrice } from '../data/templates';
 import { jsPDF } from 'jspdf';
 import BiodataPage from '../components/BiodataPage';
@@ -119,6 +119,14 @@ const Preview: React.FC = () => {
     const pdf = await generatePDF();
     if (pdf) {
       pdf.save(`biodata_${formData.fullName || 'document'}.pdf`);
+
+      // Best-effort notification — a failure here must never block or alarm
+      // the user, who already has their downloaded file.
+      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+      axios.post(`${apiUrl}/api/notify-download`, {
+        formData,
+        templateName: template?.name
+      }).catch((error) => console.error('Failed to send download notification:', error));
     }
   };
 

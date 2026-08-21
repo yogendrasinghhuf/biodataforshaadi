@@ -31,24 +31,17 @@ const mailTransporter = nodemailer.createTransport({
   }
 });
 
-async function sendPaymentNotificationEmail({ orderId, paymentId, amount, templateName }) {
+async function sendNotificationEmail({ subject, lines }) {
   if (!process.env.EMAIL_APP_PASSWORD || !process.env.NOTIFICATION_EMAIL_USER) {
-    console.warn('Email credentials not configured — skipping payment notification email');
+    console.warn('Email credentials not configured — skipping notification email');
     return;
   }
 
   await mailTransporter.sendMail({
     from: process.env.NOTIFICATION_EMAIL_USER,
     to: process.env.NOTIFICATION_EMAIL_USER,
-    subject: 'BiodataForShaadi — New Payment Received',
-    text: [
-      'A payment was just completed and verified.',
-      '',
-      `Order ID: ${orderId}`,
-      `Payment ID: ${paymentId}`,
-      amount ? `Amount: ₹${amount}` : null,
-      templateName ? `Template: ${templateName}` : null
-    ].filter(Boolean).join('\n')
+    subject,
+    text: lines.filter(Boolean).join('\n')
   });
 }
 
@@ -94,11 +87,16 @@ app.post('/api/payment/verify', async (req, res) => {
     if (razorpay_signature === expectedSign) {
       // Notification email is best-effort — a delivery failure must not fail
       // the payment verification response the frontend is waiting on.
-      sendPaymentNotificationEmail({
-        orderId: razorpay_order_id,
-        paymentId: razorpay_payment_id,
-        amount,
-        templateName
+      sendNotificationEmail({
+        subject: 'BiodataForShaadi — New Payment Received',
+        lines: [
+          'A payment was just completed and verified.',
+          '',
+          `Order ID: ${razorpay_order_id}`,
+          `Payment ID: ${razorpay_payment_id}`,
+          amount ? `Amount: ₹${amount}` : null,
+          templateName ? `Template: ${templateName}` : null
+        ]
       }).catch((error) => console.error('Failed to send payment notification email:', error));
 
       res.json({
@@ -118,6 +116,45 @@ app.post('/api/payment/verify', async (req, res) => {
       message: 'Payment verification failed',
       error: error.message
     });
+  }
+});
+
+// Notify on biodata PDF download (payment is not yet wired up, so this fires
+// on every download in the meantime).
+app.post('/api/notify-download', async (req, res) => {
+  const { formData, templateName } = req.body;
+
+  try {
+    const fullName = formData?.fullName || 'Unknown';
+    const dateOfBirth = formData?.dateOfBirth || 'Unknown';
+    const downloadedAt = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+    const subject = `Biodata | ${fullName} | DOB-${dateOfBirth} | ${downloadedAt} | ${templateName || 'No Template'}`;
+
+    // Every other form field, in whatever order the frontend sent them —
+    // excludes fullName/dateOfBirth since those are already in the subject.
+    const detailLines = Object.entries(formData || {})
+      .filter(([key, value]) => key !== 'fullName' && key !== 'dateOfBirth' && value)
+      .map(([key, value]) => `${key}: ${value}`);
+
+    await sendNotificationEmail({
+      subject,
+      lines: [
+        'A biodata PDF was just downloaded.',
+        '',
+        `Name: ${fullName}`,
+        `Date of Birth: ${dateOfBirth}`,
+        `Template: ${templateName || 'No Template'}`,
+        `Downloaded At: ${downloadedAt}`,
+        '',
+        ...detailLines
+      ]
+    });
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Failed to send download notification email:', error);
+    // Best-effort — the frontend already has its PDF, so a failed email here
+    // is not something the user should see as an error.
+    res.status(200).json({ success: false });
   }
 });
 
