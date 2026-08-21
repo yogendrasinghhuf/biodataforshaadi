@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 require('dotenv').config();
 
 const app = express();
@@ -20,29 +20,30 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET || 'YOUR_KEY_SECRET_HERE'
 });
 
-// Gmail SMTP transporter for the payment-completed notification email.
-// EMAIL_APP_PASSWORD is a Gmail App Password (not the account password),
-// generated at https://myaccount.google.com/apppasswords.
-const mailTransporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.NOTIFICATION_EMAIL_USER,
-    pass: process.env.EMAIL_APP_PASSWORD
-  }
-});
+// Resend (HTTP-based email API) for the payment/download notification
+// email. Switched from Gmail SMTP because outbound SMTP is blocked/hangs
+// from Render's network — Resend works over normal HTTPS instead.
+// RESEND_API_KEY from https://resend.com/api-keys.
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 async function sendNotificationEmail({ subject, lines }) {
-  if (!process.env.EMAIL_APP_PASSWORD || !process.env.NOTIFICATION_EMAIL_USER) {
+  if (!resend || !process.env.NOTIFICATION_EMAIL_USER) {
     console.warn('Email credentials not configured — skipping notification email');
     return;
   }
 
-  await mailTransporter.sendMail({
-    from: process.env.NOTIFICATION_EMAIL_USER,
+  // onboarding@resend.dev is Resend's shared sandbox sender, usable without
+  // verifying a custom domain — fine for a low-volume internal notification.
+  const { error } = await resend.emails.send({
+    from: 'BiodataForShaadi <onboarding@resend.dev>',
     to: process.env.NOTIFICATION_EMAIL_USER,
     subject,
     text: lines.filter(Boolean).join('\n')
   });
+
+  if (error) {
+    throw new Error(error.message || 'Resend send failed');
+  }
 }
 
 // Create order endpoint
